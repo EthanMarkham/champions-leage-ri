@@ -1,13 +1,6 @@
 import prisma from "@/lib/prisma";
 
-interface FindEventOutput {
-  event: {
-    id: number;
-    time: Date;
-    layoutId: number;
-  } | null;
-  error: string;
-}
+
 export async function findEvent(date: Date, courseName: string, layoutName: string) {
   const course = await prisma.course.findUnique({
     where: { name: courseName },

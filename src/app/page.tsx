@@ -1,11 +1,5 @@
 // pages/index.tsx
 
-import UploadForm from "@/components/UploadForm";
-
 export default function Home() {
-  return (
-    <div>
-      <UploadForm />
-    </div>
-  );
+  return <div>hi</div>;
 }
