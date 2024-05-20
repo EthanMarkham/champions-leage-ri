@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String
+  scoreSheets ScoreSheet[]
+  payments    Payment[]
+}
+
+model Course {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  latitude  String
+  longitude String
+  udisc     String
+  layouts   Layout[]
+}
+
+model Layout {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String
+  courseId    Int
+  course      Course  @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  holes       Hole[]
+  events      Event[]
+}
+
+model Hole {
+  id       Int    @id @default(autoincrement())
+  par      Int
+  hole     Int
+  distance Int
+  layoutId Int
+  layout   Layout @relation(fields: [layoutId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Event {
+  id               Int               @id @default(autoincrement())
+  time             DateTime
+  layoutId         Int
+  layout           Layout            @relation(fields: [layoutId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scoreSheetGroups ScoreSheetGroup[]
+}
+
+model ScoreSheetGroup {
+  id        Int    @id @default(autoincrement())
+  eventId   Int
+  roundHash String @unique
+  event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  scoreSheets ScoreSheet[]
+  payments    Payment[]
+}
+
+model ScoreSheet {
+  id                Int             @id @default(autoincrement())
+  scoreSheetGroupId Int
+  scoreSheetGroup   ScoreSheetGroup @relation(fields: [scoreSheetGroupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId            Int?
+  user              User?           @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  playerName        String
+  scores            Score[]
+  createdAt         DateTime        @default(now())
+  payments          Payment[]
+}
+
+model Score {
+  id           Int        @id @default(autoincrement())
+  scoreSheetId Int
+  scoreSheet   ScoreSheet @relation(fields: [scoreSheetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  holeNumber   Int
+  score        Int
+
+  @@index([scoreSheetId])
+}
+
+model Payment {
+  id                Int              @id @default(autoincrement())
+  amount            Float
+  createdAt         DateTime         @default(now())
+  scoreSheetId      Int
+  scoreSheet        ScoreSheet       @relation(fields: [scoreSheetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId            Int
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scoreSheetGroupId Int?
+  scoreSheetGroup   ScoreSheetGroup? @relation(fields: [scoreSheetGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+}
