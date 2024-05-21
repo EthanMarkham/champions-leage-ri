@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
         };
 
         // Incorporate users into the processing logic if needed
-        console.log("Users:", users);
+        console.log("Users:", players);
 
         const output = await processScoreData(scoreData);
         resolve(
