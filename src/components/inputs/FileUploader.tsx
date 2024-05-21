@@ -1,14 +1,22 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, ReactNode } from "react";
+import { CloseIcon } from "../svg";
 
-export default function FileUploader() {
+interface FileUploaderProps {
+  onFileChange: (file: File | null) => void;
+  children?: ReactNode;
+}
+
+export default function FileUploader({ onFileChange, children }: FileUploaderProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      onFileChange(selectedFile);
     }
   };
 
@@ -25,40 +33,56 @@ export default function FileUploader() {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setFile(e.dataTransfer.files[0]);
+    const droppedFile = e.dataTransfer.files?.[0];
+    if (droppedFile) {
+      setFile(droppedFile);
+      onFileChange(droppedFile);
       e.dataTransfer.clearData();
     }
   };
 
+  const handleRemoveFile = () => {
+    setFile(null);
+    onFileChange(null);
+  };
+
   return (
     <div
-      className={`flex items-center justify-center w-full ${isDragging ? "border-blue-500" : "border-gray-300"}`}
+      className={`relative flex items-center justify-center w-full border-4 border-dashed ${
+        isDragging ? "border-blue-500" : "border-gray-300"
+      } rounded-lg`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-60 p-10 group text-center cursor-pointer">
-        <div className="h-full w-full text-center flex flex-col justify-center items-center">
+      <label className="flex flex-col w-full h-60 text-center cursor-pointer group">
+        <div className="relative flex flex-col items-center justify-center h-full w-full">
           {file ? (
-            <p className="text-green-600">{file.name}</p>
-          ) : (
             <>
-              <div className="flex flex-auto max-h-48 w-2/5 mx-auto -mt-10">
-                <img
-                  className="has-mask h-36 object-center"
-                  src="https://img.freepik.com/free-vector/image-upload-concept-landing-page_52683-27130.jpg?size=338&ext=jpg"
-                  alt="freepik image"
-                />
-              </div>
-              <p className="pointer-none text-gray-500">
-                <span className="text-sm">Drag and drop</span> files here <br /> or{" "}
-                <a href="#" className="text-blue-600 hover:underline pointer-events-none">
-                  select a file
-                </a>{" "}
-                from your computer
-              </p>
+              <p className="text-green-600 mb-2 truncate w-[80%] text-center">{file.name}</p>
+              <button
+                onClick={handleRemoveFile}
+                className="absolute top-2 right-2 flex items-center justify-center w-6 h-6 bg-red-300 text-white rounded-full hover:bg-red-400"
+              >
+                <CloseIcon className="w-4 h-4" />
+              </button>
             </>
+          ) : (
+            children || (
+              <>
+                <div className="flex flex-auto max-h-48 w-2/5 mx-auto -mt-10">
+                  <img
+                    className="has-mask h-36 object-center"
+                    src="https://img.freepik.com/free-vector/image-upload-concept-landing-page_52683-27130.jpg?size=338&ext=jpg"
+                    alt="Upload illustration"
+                  />
+                </div>
+                <p className="text-gray-500 pointer-none">
+                  <span className="text-sm">Drag and drop</span> files here <br /> or{" "}
+                  <span className="text-blue-600 hover:underline">select a file</span> from your computer
+                </p>
+              </>
+            )
           )}
         </div>
         <input type="file" className="hidden" onChange={handleFileChange} />

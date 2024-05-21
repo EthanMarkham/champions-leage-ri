@@ -1,32 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const query = searchParams.get("query");
+  const name = searchParams.get("name");
+  const id = searchParams.get("id");
+  const limit = searchParams.get("limit");
+  const sort = searchParams.get("sort");
+  const orderByField = searchParams.get("orderBy");
 
-  if (typeof query !== 'string') {
-    return NextResponse.json({ error: 'Invalid query' }, { status: 400 });
+  let where: Prisma.UserWhereInput = {};
+
+  if (name) {
+    where.name = {
+      contains: name,
+      mode: "insensitive",
+    };
+  }
+
+  if (id && !isNaN(Number(id))) {
+    where.id = Number(id);
+  }
+
+  let take = 20; // Default limit
+  if (limit && !isNaN(Number(limit))) {
+    take = Number(limit);
+  }
+
+  let orderBy: Prisma.UserOrderByWithRelationInput = { name: "asc" }; // Default order
+  if (orderByField && (orderByField === "name" || orderByField === "id")) {
+    orderBy = { [orderByField]: sort === "desc" ? "desc" : "asc" };
   }
 
   try {
     const users = await prisma.user.findMany({
-      where: {
-        name: {
-          contains: query,
-          mode: 'insensitive',
-        },
-      },
+      where,
       select: {
         name: true,
         id: true,
       },
-      take: 4, // Limit to top 4 results
+      take,
+      orderBy,
     });
 
     return NextResponse.json(users, { status: 200 });
   } catch (error) {
     console.error("Error fetching users:", error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

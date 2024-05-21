@@ -15,6 +15,7 @@ interface ScoreResult {
 
 export interface ScoreData {
   hash: string;
+  users: any;
   course: string;
   layout: string;
   time: Date;
