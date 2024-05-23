@@ -14,7 +14,6 @@ interface ScoreTableProps {
 
 const ScoreTable = ({ scoreSheets, holes }: ScoreTableProps) => {
   const totalScore = getTotalPar(holes);
-
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full table-auto border-collapse">
