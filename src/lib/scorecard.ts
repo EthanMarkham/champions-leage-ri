@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import { findEvent } from "./event";
 import { Score } from "@prisma/client";
+import { cache } from "react";
+import { findMatchingUser } from "@/lib/users";
 
 interface ScoreResult {
   PlayerName: string;
@@ -129,7 +131,7 @@ export async function processScoreData(data: ScoreData): Promise<Output> {
   return output;
 }
 
-export async function getScoreSheetDetails(id: number) {
+export const getScoreSheetDetails = cache(async (id: number) => {
   return await prisma.scoreSheetGroup.findUnique({
     where: { id },
     include: {
@@ -155,49 +157,27 @@ export async function getScoreSheetDetails(id: number) {
       payments: true,
     },
   });
-}
-
-export function findMatchingUser(nameInput: string, users: { name: string; id: number }[]) {
-  // Function to normalize user names
-  const normalizeName = (name: string) => name.trim().toLowerCase();
-
-  // Normalize the input for comparison
-  const normalizedInput = normalizeName(nameInput);
-
-  // Function to compare names
-  const isMatch = (userName: string, input: string) => {
-    // Split names into parts for comparison
-    const userParts = userName.split(" ");
-    const inputParts = input.split(" ");
-
-    // Check for exact match or partial match (first name, last name, or initial with last name)
-    if (userName === input || userParts.some((part) => inputParts.includes(part))) {
-      return true;
-    }
-
-    // Check for first initial with last name
-    if (inputParts.length === 2 && userParts.length === 2) {
-      const [inputFirstInitial, inputLastName] = inputParts;
-      const [userFirstName, userLastName] = userParts;
-      if (inputFirstInitial.charAt(0) === userFirstName.charAt(0) && inputLastName === userLastName) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  // Find the best match
-  for (const user of users) {
-    if (isMatch(normalizeName(user.name), normalizedInput)) {
-      return user;
-    }
-  }
-
-  // Return null if no match is found
-  return null;
-}
+});
 
 export function getTotalStrokes(scrores: Score[]) {
   return scrores.reduce((prev, cur) => prev + cur.score, 0);
 }
+
+export const getScoresByEventId = cache(async (id: number) => {
+  const scoreGroups = await prisma.scoreSheetGroup.findMany({
+    include: {
+      scoreSheets: {
+        include: {
+          scores: true,
+        },
+      },
+    },
+    where: {
+      eventId: {
+        equals: id,
+      },
+    },
+  });
+
+  return scoreGroups;
+});

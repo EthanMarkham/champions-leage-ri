@@ -14,3 +14,20 @@ export function getDateFromUdiscTime(dateString: string) {
 
   return date;
 }
+
+export function isCurrentMonthYear(targetDate: Date): boolean {
+  const currentDate = new Date();
+
+  const currentMonth = currentDate.getMonth() + 1; // Months are 0-based in JavaScript, so add 1
+  const currentYear = currentDate.getFullYear();
+
+  const targetMonth = targetDate.getMonth() + 1; // Months are 0-based in JavaScript, so add 1
+  const targetYear = targetDate.getFullYear();
+
+  console.log(`Current Date: ${currentDate}`);
+  console.log(`Current Month: ${currentMonth}, Current Year: ${currentYear}`);
+  console.log(`Target Date: ${targetDate}`);
+  console.log(`Target Month: ${targetMonth}, Target Year: ${targetYear}`);
+
+  return currentMonth === targetMonth && currentYear === targetYear;
+}

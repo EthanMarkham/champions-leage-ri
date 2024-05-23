@@ -1,7 +1,6 @@
 // src/app/scorecard/[id]/page.tsx
 import ScoreTable from "@/components/scorecard/ScoreTable";
 import { getScoreSheetDetails } from "@/lib/scorecard";
-import { ScoreSheetGroup } from "@prisma/client";
 
 interface Params {
   id: string;
@@ -31,6 +30,8 @@ async function fetchScoreSheetGroup(id: string) {
   return scoreSheetGroup;
 }
 
+export const revalidate = 3600; // revalidate the data at most every hour
+
 export default async function ScoreCardPage({ params }: { params: Params }) {
   const scoreSheetGroup = await fetchScoreSheetGroup(params.id);
   console.log(scoreSheetGroup);
@@ -52,3 +53,4 @@ export default async function ScoreCardPage({ params }: { params: Params }) {
     </div>
   );
 }
+

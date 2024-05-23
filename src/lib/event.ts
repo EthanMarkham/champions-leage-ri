@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 
-
 export async function findEvent(date: Date, courseName: string, layoutName: string) {
   const course = await prisma.course.findUnique({
     where: { name: courseName },
@@ -52,4 +51,57 @@ export async function findEvent(date: Date, courseName: string, layoutName: stri
   }
 
   return { event, error: null };
+}
+
+export async function getAllEvents() {
+  const events = await prisma.event.findMany({
+    include: {
+      layout: {
+        include: {
+          course: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    //where: { name: courseName },
+  });
+
+  return events;
+}
+
+export async function getCurrentEvent() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  const event = await prisma.event.findFirst({
+    where: {
+      AND: [
+        {
+          time: {
+            gte: new Date(`${currentYear}-${currentMonth.toString().padStart(2, "0")}-01T00:00:00.000Z`),
+            lt: new Date(`${currentYear}-${(currentMonth + 1).toString().padStart(2, "0")}-01T00:00:00.000Z`),
+          },
+        },
+      ],
+    },
+    include: {
+      layout: {
+        include: {
+          course: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+
+      scoreSheetGroups: true,
+    },
+  });
+
+  return event;
 }
