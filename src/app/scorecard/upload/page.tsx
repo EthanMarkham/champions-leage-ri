@@ -3,6 +3,7 @@
 import { FormEvent, Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from 'next/navigation';
 
 const FileUploader = dynamic(() => import("@/components/inputs/FileUploader"), { ssr: false });
 const UserMultiSelect = dynamic(() => import("@/components/multiselect/UserMultiSelect"), { ssr: false });
@@ -11,6 +12,7 @@ export default function ScoreCardUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [players, setPlayers] = useState<{ name: string; id: number }[] | null>(null);
   const [message, setMessage] = useState<string>("");
+  const router = useRouter();
 
   const handleUpload = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,8 +47,8 @@ export default function ScoreCardUpload() {
       }
 
       const data = await res.json();
+      router.push(`${data.scoreSheetGroupId}`)
       console.log(data);
-      setMessage(data.message);
     } catch (error) {
       console.error("Error during file upload:", error);
       setMessage("Failed to upload the file. Please try again.");

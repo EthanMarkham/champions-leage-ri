@@ -37,3 +37,44 @@ export const getUsers = async (params?: GetUsersParams) => {
     return [];
   }
 };
+
+export function findMatchingUser(nameInput: string, users: { name: string; id: number }[]) {
+  // Function to normalize user names
+  const normalizeName = (name: string) => name.trim().toLowerCase();
+
+  // Normalize the input for comparison
+  const normalizedInput = normalizeName(nameInput);
+
+  // Function to compare names
+  const isMatch = (userName: string, input: string) => {
+    // Split names into parts for comparison
+    const userParts = userName.split(" ");
+    const inputParts = input.split(" ");
+
+    // Check for exact match or partial match (first name, last name, or initial with last name)
+    if (userName === input || userParts.some((part) => inputParts.includes(part))) {
+      return true;
+    }
+
+    // Check for first initial with last name
+    if (inputParts.length === 2 && userParts.length === 2) {
+      const [inputFirstInitial, inputLastName] = inputParts;
+      const [userFirstName, userLastName] = userParts;
+      if (inputFirstInitial.charAt(0) === userFirstName.charAt(0) && inputLastName === userLastName) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // Find the best match
+  for (const user of users) {
+    if (isMatch(normalizeName(user.name), normalizedInput)) {
+      return user;
+    }
+  }
+
+  // Return null if no match is found
+  return null;
+}
