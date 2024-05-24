@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { roundTo } from "./math";
 
 export async function findEvent(date: Date, courseName: string, layoutName: string) {
   const course = await prisma.course.findUnique({
@@ -61,6 +62,7 @@ export async function getAllEvents() {
           course: {
             select: {
               name: true,
+              image: true,
             },
           },
         },
@@ -104,4 +106,69 @@ export async function getCurrentEvent() {
   });
 
   return event;
+}
+
+export async function getDetailedEventList() {
+  const events = await prisma.event.findMany({
+    include: {
+      scoreSheetGroups: {
+        include: {
+          scoreSheets: {
+            include: {
+              scores: true,
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      layout: {
+        include: {
+          course: {
+            select: {
+              name: true,
+              image: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const detailedEvents = events.map((event) => {
+    let totalScoreSheets = 0;
+    let bestScore: number | null = null;
+    let bestScoreUsername: string | null = null;
+    let totalScoresSum = 0;
+    let totalScoresCount = 0;
+
+    event.scoreSheetGroups.forEach((scoreSheetGroup) => {
+      scoreSheetGroup.scoreSheets.forEach((scoreSheet) => {
+        totalScoreSheets += 1;
+        const scoreSheetTotalScore = scoreSheet.scores.reduce((sum, score) => sum + score.score, 0);
+
+        if (bestScore === null || scoreSheetTotalScore < bestScore) {
+          bestScore = scoreSheetTotalScore;
+          bestScoreUsername = scoreSheet.user?.name || scoreSheet.playerName;
+        }
+
+        totalScoresSum += scoreSheetTotalScore;
+        totalScoresCount += 1;
+      });
+    });
+
+    const averageScore = totalScoresCount > 0 ? roundTo(totalScoresSum / totalScoresCount, 2) : null;
+
+    return {
+      ...event,
+      totalScoreSheets,
+      bestScore,
+      averageScore,
+      bestScoreUsername,
+    };
+  });
+  return detailedEvents;
 }

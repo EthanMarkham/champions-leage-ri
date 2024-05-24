@@ -1,12 +1,13 @@
 // pages/index.js
 
+import { getCourses } from "@/lib/courses";
 import React from "react";
 
-const Rules = () => {
+const Rules = async () => {
+  const courses = await getCourses();
+
   return (
-    <div className="max-w-4xl mx-auto p-6 rounded-lg shadow-lg bg-black text-white">
-      <h1 className="text-4xl font-bold mb-8 text-center">Disc Golf League</h1>
-      
+    <div className="max-w-4xl mx-auto p-6">
       <div className="mb-8">
         <p className="text-xl mb-2 text-gray-400">07 Jan 2024</p>
         <p className="text-lg">One course in RI selected per month</p>
@@ -15,9 +16,11 @@ const Rules = () => {
       <div className="mb-8">
         <h2 className="text-3xl font-semibold mb-4">Courses</h2>
         <ul className="list-disc list-inside text-lg">
-          <li>Curtis Corner</li>
-          <li>Ninigret</li>
-          <li>Willow (Must also pay Willow $5 course fee when playing)</li>
+          {courses.map((course) => (
+            <li>
+              {course.name} {course.note && <span className="text-gray-600 text-xs">*{course.note}</span>}
+            </li>
+          ))}
         </ul>
       </div>
 

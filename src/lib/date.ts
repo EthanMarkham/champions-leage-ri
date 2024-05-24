@@ -18,13 +18,16 @@ export function getDateFromUdiscTime(dateString: string) {
 export function isCurrentMonthYear(targetDate: Date): boolean {
   const currentDate = new Date();
 
-  const currentYear = currentDate.getUTCFullYear();
-  const currentMonth = currentDate.getUTCMonth(); // Months are 0-based in JavaScript
-  const currentDay = currentDate.getUTCDate();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth(); // Months are 0-based in JavaScript
 
-  const targetYear = targetDate.getUTCFullYear();
-  const targetMonth = targetDate.getUTCMonth(); // Months are 0-based in JavaScript
-  const targetDay = targetDate.getUTCDate();
+  const targetYear = targetDate.getFullYear();
+  const targetMonth = targetDate.getMonth(); // Months are 0-based in JavaScript
 
-  return currentYear === targetYear && currentMonth === targetMonth && currentDay === targetDay;
+  return currentYear === targetYear && currentMonth === targetMonth;
+}
+
+export function dateToMonthYearDisplay(targetDate: Date) {
+  const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", timeZone: "UTC" };
+  return targetDate.toLocaleDateString(undefined, options);
 }

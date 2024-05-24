@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, ChangeEvent, ReactNode } from "react";
-import { CloseIcon } from "../svg";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface FileUploaderProps {
   onFileChange: (file: File | null) => void;
@@ -64,7 +64,7 @@ export default function FileUploader({ onFileChange, children }: FileUploaderPro
                 onClick={handleRemoveFile}
                 className="absolute top-2 right-2 flex items-center justify-center w-6 h-6 bg-red-300 text-white rounded-full hover:bg-red-400"
               >
-                <CloseIcon className="w-4 h-4" />
+                <XMarkIcon className="w-4 h-4" />
               </button>
             </>
           ) : (

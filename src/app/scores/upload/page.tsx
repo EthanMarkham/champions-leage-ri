@@ -3,7 +3,7 @@
 import { FormEvent, Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 const FileUploader = dynamic(() => import("@/components/inputs/FileUploader"), { ssr: false });
 const UserMultiSelect = dynamic(() => import("@/components/multiselect/UserMultiSelect"), { ssr: false });
@@ -47,7 +47,7 @@ export default function ScoreCardUpload() {
       }
 
       const data = await res.json();
-      router.push(`${data.scoreSheetGroupId}`)
+      router.push(`${data.scoreSheetGroupId}`);
       console.log(data);
     } catch (error) {
       console.error("Error during file upload:", error);
@@ -56,13 +56,7 @@ export default function ScoreCardUpload() {
   };
 
   return (
-    <div
-      className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover"
-      style={{
-        backgroundImage:
-          "url(https://images.unsplash.com/photo-1621243804936-775306a8f2e3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80)",
-      }}
-    >
+    <div className="relative  flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <Toaster
         toastOptions={{
           className: "bg-white border border-gray-200 text-sm tracking-tight text-gray-800 shadow-lg rounded-lg p-4",
@@ -70,9 +64,7 @@ export default function ScoreCardUpload() {
           position: "top-center",
         }}
       />
-
-      <div className="absolute bg-black opacity-60 inset-0 z-0" />
-
+      
       <div className="sm:max-w-lg w-full p-10 bg-white rounded-xl z-10 relative">
         <div className="text-center">
           <h2 className="mt-5 text-3xl font-bold text-gray-900">Submit your ScoreCard!</h2>

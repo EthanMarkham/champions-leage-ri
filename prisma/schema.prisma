@@ -20,11 +20,13 @@ model Course {
   name      String   @unique
   street    String
   city      String
+  note      String   @default("")
   state     String
   zipCode   String
   latitude  String
   longitude String
   udisc     String
+  image     String   @default("")
   layouts   Layout[]
 }
 
@@ -56,13 +58,13 @@ model Event {
 }
 
 model ScoreSheetGroup {
-  id        Int    @id @default(autoincrement())
-  eventId   Int
-  roundHash String @unique
-  event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  scoreSheets ScoreSheet[]
-  payments    Payment[]
+  id              Int          @id @default(autoincrement())
+  eventId         Int
+  roundHash       String       @unique
+  event           Event        @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  paymentsOveride Boolean      @default(false)
+  scoreSheets     ScoreSheet[]
+  payments        Payment[]
 }
 
 model ScoreSheet {

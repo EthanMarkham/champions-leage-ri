@@ -21,9 +21,12 @@ export default async function Scores() {
     <main className="flex gap-4 min-h-screen flex-col items-center p-24">
       <Select
         label={"Select an Event"}
-        selectProps={{ id: "eventSelector", defaultValue: currentEvent ? currentEvent.id : undefined }}
+        id="eventSelector"
+        description="View Scores By Month"
+        defaultValue={currentEvent ? currentEvent.id : undefined}
         options={events.map((e) => ({ value: e.id, label: e.layout.course.name + " - " + e.layout.name }))}
       />
+      
       <div className="flex flex-col w-full gap-2">
         {scores.map(({ playerName, total, userId }) => (
           <div

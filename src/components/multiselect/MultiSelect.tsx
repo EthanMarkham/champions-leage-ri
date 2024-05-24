@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ArrowDown, CloseIcon } from "../svg";
-
+import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 interface MultiselectProps<T> {
   searchFunction: (query: string) => Promise<T[]>;
   getItemLabel: (item: T) => string;
@@ -98,7 +97,7 @@ export const Multiselect = <T,>({
                 onFocus={() => setShowDropdown(true)}
               />
               <button className="flex items-center justify-center w-8 h-8 text-gray-600" onClick={handleSearchClick}>
-                <ArrowDown className="w-4 h-4" />
+                <ChevronDownIcon className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -126,7 +125,7 @@ export const Multiselect = <T,>({
             >
               <div className="text-xs">{getItemLabel(item)}</div>
               <div onClick={() => handleRemove(item)} className="cursor-pointer">
-                <CloseIcon />
+                <XMarkIcon />
               </div>
             </div>
           ))}

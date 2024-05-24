@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header";
 import Navbar from "@/components/nav/Navbar";
+import clsx from "clsx";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -58,9 +58,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body
+        className={clsx(
+          inter.className,
+          "bg-hero-pattern bg-cover bg-center h-screen relative flex flex-col max-h-screen overflow-hidden"
+        )}
+      >
         <Navbar />
-        <>{children}</>
+        <main className="p-8 lg:p-12 bg-no-repeat z-10 grow overflow-auto">{children}</main>
       </body>
     </html>
   );
