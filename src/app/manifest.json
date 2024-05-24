@@ -1,7 +1,7 @@
 {
     "name": "My awesome PWA app",
     "short_name": "PWA App",
-    "icons": [
+    "icons_bad": [
       {
         "src": "/icons/android-chrome-192x192.png",
         "sizes": "192x192",
