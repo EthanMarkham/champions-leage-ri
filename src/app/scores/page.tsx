@@ -25,8 +25,11 @@ export default async function Scores() {
         options={events.map((e) => ({ value: e.id, label: e.layout.course.name + " - " + e.layout.name }))}
       />
       <div className="flex flex-col w-full gap-2">
-        {scores.map(({ playerName, total }) => (
-          <div className="p-2 bg-gray-500 items-center flex flex-row gap-2 rounded-lg border-gray-200 border-2">
+        {scores.map(({ playerName, total, userId }) => (
+          <div
+            key={userId}
+            className="p-2 bg-gray-500 items-center flex flex-row gap-2 rounded-lg border-gray-200 border-2"
+          >
             <span className="block">{playerName}</span>
             <span className="block">{total}</span>
           </div>
