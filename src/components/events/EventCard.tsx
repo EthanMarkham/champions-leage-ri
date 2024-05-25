@@ -17,16 +17,16 @@ const EventDetail: React.FC<{ label: string; value?: string }> = ({ label, value
 
 const EventCard: React.FC<EventDetailsType> = (event) => {
   return (
-    <Card key={event.id} className="flex gap-4 p-4 max-w-3xl">
+    <Card key={event.id} className="flex flex-col md:flex-row gap-4 p-4 max-w-3xl mx-auto">
       <Image
         src={event.layout.course.image}
         alt={event.layout.course.name}
         width={160}
         height={160}
-        className="rounded-full object-cover aspect-square"
+        className="rounded-full object-cover aspect-square mx-auto md:mx-0"
       />
       <div className="flex flex-col flex-1">
-        <h2 className="text-2xl font-bold mb-4">{`${event.layout.course.name} - ${event.layout.name}`}</h2>
+        <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-4 text-center md:text-left">{`${event.layout.course.name} - ${event.layout.name}`}</h2>
         <div className="space-y-1.5">
           <EventDetail label="When:" value={dateToMonthYearDisplay(event.time)} />
           <EventDetail label="Total Rounds Played:" value={event.totalScoreSheets.toString()} />
@@ -34,7 +34,7 @@ const EventCard: React.FC<EventDetailsType> = (event) => {
           <EventDetail label="Average Score:" value={event.averageScore ? event.averageScore.toString() : "---"} />
         </div>
         <Link href={`/events/${event.id}`} passHref>
-          <Button className="mt-4 inline-block text-blue-600 hover:text-blue-800 font-medium">View Event</Button>
+          <Button className="mt-4 inline-block text-blue-600 hover:text-blue-800 font-medium mx-auto md:mx-0">View Event</Button>
         </Link>
       </div>
     </Card>

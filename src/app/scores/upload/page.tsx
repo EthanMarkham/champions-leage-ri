@@ -82,11 +82,12 @@ export default function ScoreCardUpload() {
             </div>
             <FileUploader onFileChange={setFile}>
               <div className="text-gray-500 pointer-none relative w-full h-full flex flex-col items-center justify-center">
-                <p className="text-sm text-gray-300 absolute top-0 right-0">File type: CSV only</p>
-                <p className="text-sm block">Drag and drop your CSV here</p>
-                <p>
+                <p className="text-sm text-gray-300 absolute top-0 right-0 hidden md:block">File type: CSV only</p>
+                <p className="text-sm hidden md:block">Drag and drop your CSV here</p>
+                <p className="hidden md:block">
                   Or <span className="text-blue-600 hover:underline ">select a file</span> from your computer
                 </p>
+                <p className="text-sm block md:hidden">Select your CSV</p>
               </div>
             </FileUploader>
           </Suspense>

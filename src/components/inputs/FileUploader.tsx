@@ -77,7 +77,7 @@ export default function FileUploader({ onFileChange, children }: FileUploaderPro
                     alt="Upload illustration"
                   />
                 </div>
-                <p className="text-gray-500 pointer-none">
+                <p className="text-gray-500 pointer-none hidden md:block">
                   <span className="text-sm">Drag and drop</span> files here <br /> or{" "}
                   <span className="text-blue-600 hover:underline">select a file</span> from your computer
                 </p>

@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
                 <Link href="/scores/upload">
                   <Button>
                     <CheckIcon className="h-6 w-6 inline mr-1" aria-hidden="true" />
-                    <span className="inline">Submit Your Round</span>
+                    <span className="hidden lg:inline">Submit Your Round</span>
                   </Button>
                 </Link>
 

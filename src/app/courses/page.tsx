@@ -8,14 +8,26 @@ export default async function Courses() {
   const courses = await getCourses();
 
   return (
-    <section className="flex flex-col items-center justify-between">
+    <section className="flex flex-col items-center justify-between p-4">
       <div className="flex flex-col w-full gap-4">
         {courses.map((c) => (
-          <Card key={c.id}>
-            <Image src={c.image} alt="?" width={100} height={100} className="aspect-square rounded-full inline-block" />
-            <div key={c.id} className="inline-flex items-center divide-x-2 divide-gray-300 ml-4 [&>text]:px-2">
-              <text className="text-lg font-bold">{c.name}</text>
-              <text>{c.layouts.length} layouts</text>
+          <Card key={c.id} className="flex flex-col sm:flex-row items-center sm:gap-4 p-4">
+            <div className="flex-shrink-0">
+              <Image 
+                src={c.image} 
+                alt={`${c.name} course image`} 
+                width={100} 
+                height={100} 
+                className="aspect-square rounded-full"
+              />
+            </div>
+            <div className="flex flex-col text-center sm:text-left sm:ml-4 w-full">
+              <p className="text-lg font-bold">{c.name}</p>
+              <p className="text-gray-500">
+                {c.layouts.length} layout{c.layouts.length !== 1 && "s"}
+              </p>
+              <p className="text-gray-500">{`${c.street}, ${c.city}, ${c.state} ${c.zipCode}`}</p>
+              <p className="text-gray-500">{c.note}</p>
             </div>
           </Card>
         ))}
