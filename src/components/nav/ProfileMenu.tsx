@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from "@headlessui/react";
-import clsx from "clsx";
+import { twMerge } from 'tailwind-merge'
 import { Fragment } from "react";
 
 const ProfileMenu: React.FC = () => (
@@ -27,21 +27,21 @@ const ProfileMenu: React.FC = () => (
       <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
         <MenuItem>
           {({ active }) => (
-            <a href="#" className={clsx(active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
+            <a href="#" className={twMerge (active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
               Your Profile
             </a>
           )}
         </MenuItem>
         <MenuItem>
           {({ active }) => (
-            <a href="#" className={clsx(active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
+            <a href="#" className={twMerge (active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
               Settings
             </a>
           )}
         </MenuItem>
         <MenuItem>
           {({ active }) => (
-            <a href="#" className={clsx(active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
+            <a href="#" className={twMerge (active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
               Sign out
             </a>
           )}

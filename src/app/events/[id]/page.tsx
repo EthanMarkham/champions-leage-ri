@@ -1,44 +1,53 @@
 import Select from "@/components/inputs/Select";
-import { isCurrentMonthYear } from "@/lib/date";
+import Card from "@/components/ui/Card";
 import { getAllEvents } from "@/lib/event";
-import { getScoresByEventId } from "@/lib/scorecard";
-import { usePathname } from "next/navigation";
+import { getUserScoresByEventId } from "@/lib/scorecard";
 
 export const revalidate = 3600; // revalidate the data at most every hour
-
-const normalizeScores = (scores: Awaited<ReturnType<typeof getScoresByEventId>>) =>
-  scores
-    .flatMap((s) => s.scoreSheets)
-    .map((s) => ({ ...s, total: s.scores.reduce((prev, cur) => prev + cur.score, 0) }));
 
 interface PageProps {
   params: { id: string };
 }
+
 export default async function Page({ params }: PageProps) {
   const events = await getAllEvents();
-
-  // const id = searchParams.get('id');
-  console.log({ params });
-  const scoreSheets = await getScoresByEventId(parseInt(params.id));
-  const scores = scoreSheets ? normalizeScores(scoreSheets) : [];
+  const scoreSheets = await getUserScoresByEventId(parseInt(params.id));
+  console.log(scoreSheets);
 
   return (
     <section className="flex gap-4 flex-col items-center">
-      <Select
-        id="eventSelector"
-        defaultValue={params.id}
-        options={events.map((e) => ({ value: e.id, label: e.layout.course.name + " - " + e.layout.name }))}
-      />
+      <div className="w-full max-w-xl">
+        {/*<Select
+          id="eventSelector"
+          defaultValue={params.id}
+          options={events.map((e) => ({
+            value: e.id,
+            label: `${e.layout.course.name} - ${e.layout.name}`,
+          }))}
+          className="mb-4"
+        /> */}
+      </div>
 
-      <div className="flex flex-col w-full gap-2">
-        {scores.map(({ playerName, total, userId }) => (
-          <div
-            key={userId}
-            className="p-2 bg-gray-500 items-center flex flex-row gap-2 rounded-lg border-gray-200 border-2"
-          >
-            <span className="block">{playerName}</span>
-            <span className="block">{total}</span>
-          </div>
+      <div className="flex flex-col w-full max-w-xl gap-4">
+        {Object.values(scoreSheets).map(({ user, scoreSheets, average, best }) => (
+          <Card key={user.id} className="p-4 shadow-md">
+            <div className="flex flex-row items-center justify-between mb-2">
+              <span className="text-lg font-semibold">{user.name}</span>
+              <div className="text-sm">
+                <label className="font-semibold">Best:</label>&nbsp;{best}
+              </div>
+              <div className="text-sm">
+                <label className="font-semibold">Average:</label>&nbsp;{average}
+              </div>
+            </div>
+            <div className="border-t flex gap-2 p-2">
+              {scoreSheets.map((scoreSheet, index) => (
+                <div key={index} className="p-2 rounded-full border bg-gray-800 text-white">
+                  {scoreSheet.total}
+                </div>
+              ))}
+            </div>
+          </Card>
         ))}
       </div>
     </section>

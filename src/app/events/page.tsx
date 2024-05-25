@@ -9,7 +9,7 @@ export default async function Events() {
   const events = await getDetailedEventList();
   return (
     <section className="flex flex-col items-center justify-between">
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full  items-center">
         {events.map((event) => (
           <EventCard key={event.id} {...event} />
         ))}

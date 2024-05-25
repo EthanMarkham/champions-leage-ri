@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { findEvent } from "./event";
-import { Score } from "@prisma/client";
+import { Score, ScoreSheet, User } from "@prisma/client";
 import { cache } from "react";
 import { findMatchingUser } from "@/lib/users";
 
@@ -39,6 +39,11 @@ interface Output {
   scoreSheetGroupId: number | null;
   errors: GeneralError[];
   multipleUserErrors: MultipleUserError[];
+}
+
+interface UserScores {
+  user: User;
+  scoreSheets: (ScoreSheet & { scores: Score[]; total: number })[];
 }
 
 export async function processScoreData(data: ScoreData): Promise<Output> {
@@ -180,4 +185,46 @@ export const getScoresByEventId = cache(async (id: number) => {
   });
 
   return scoreGroups;
+});
+
+export const getUserScoresByEventId = cache(async (id: number) => {
+  const scoreSheets = await prisma.scoreSheet.findMany({
+    include: {
+      user: true,
+      scores: true,
+    },
+    where: {
+      scoreSheetGroup: {
+        eventId: id,
+      },
+    },
+  });
+
+  // Grouping scoreSheets by user
+  const scoresByUser = scoreSheets.reduce<Record<number, UserScores>>((acc, scoreSheet) => {
+    if (!scoreSheet.user) return acc; // Skip if there's no user
+
+    const userId = scoreSheet.user.id;
+    if (!acc[userId]) {
+      acc[userId] = {
+        user: scoreSheet.user,
+        scoreSheets: [],
+      };
+    }
+
+    acc[userId].scoreSheets.push({
+      ...scoreSheet,
+      total: scoreSheet.scores.reduce((prev, cur) => prev + cur.score, 0),
+    });
+
+    return acc;
+  }, {});
+
+  const usersScores = Object.values(scoresByUser).map((userScore) => ({
+    ...userScore,
+    average: userScore.scoreSheets.reduce((prev, cur) => prev + cur.total, 0) / userScore.scoreSheets.length,
+    best: userScore.scoreSheets.reduce((prev, cur) => (prev > cur.total ? prev : cur.total), 0),
+  }));
+
+  return usersScores;
 });

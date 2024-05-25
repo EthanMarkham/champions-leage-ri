@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/nav/Navbar";
-import clsx from "clsx";
+import { twMerge } from 'tailwind-merge'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={clsx(
+        className={twMerge (
           inter.className,
           "bg-hero-pattern bg-cover bg-center h-screen relative flex flex-col max-h-screen overflow-hidden"
         )}

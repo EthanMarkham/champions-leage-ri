@@ -1,7 +1,7 @@
 import React from "react";
 import { Description, Field, Label, Select } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 interface Option {
   value: string | number;
   label: string;
@@ -22,11 +22,11 @@ const SelectComponent: React.FC<SelectComponentProps> = ({ label, options, descr
         {description && <Description className="text-sm/6 text-white/50">{description}</Description>}
         <div className="relative">
           <Select
-            className={clsx(
+            {...selectProps}
+            className={twMerge(
               "mt-3 block w-full appearance-none rounded-lg border-none bg-white/5 py-1.5 px-3 text-sm/6 text-white",
               "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
             )}
-            {...selectProps}
           >
             {options.map((option) => (
               <option key={option.value} value={option.value} selected={option.selected}>
