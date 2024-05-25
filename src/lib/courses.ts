@@ -7,6 +7,8 @@ export const getCourses = cache(async () => {
       layouts: {
         select: {
           name: true,
+          holes: true,
+          id: true,
         },
       },
     },
