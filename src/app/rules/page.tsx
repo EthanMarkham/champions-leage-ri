@@ -17,7 +17,7 @@ const Rules = async () => {
         <h2 className="text-3xl font-semibold mb-4">Courses</h2>
         <ul className="list-disc list-inside text-lg">
           {courses.map((course) => (
-            <li>
+            <li key={course.id}>
               {course.name} {course.note && <span className="text-gray-600 text-xs">*{course.note}</span>}
             </li>
           ))}
