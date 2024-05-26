@@ -21,4 +21,6 @@ const SpinnerPage = forwardRef<HTMLDivElement, SpinnerPageProps>(({ spinnerProps
   );
 });
 
+SpinnerPage.displayName = 'SpinnerPage';
+
 export default SpinnerPage;
