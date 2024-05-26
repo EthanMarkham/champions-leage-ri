@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/nav/Navbar";
 import { twMerge } from "tailwind-merge";
+import { NavBar } from "@/components/nav/NavBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -64,8 +64,8 @@ export default function RootLayout({
           "bg-hero-pattern bg-cover bg-center h-screen relative flex flex-col max-h-screen overflow-hidden"
         )}
       >
-        <Navbar />
-        <main className="p-8 lg:p-12 bg-no-repeat z-10 grow overflow-auto">{children}</main>
+        <NavBar />
+        {children}
       </body>
     </html>
   );

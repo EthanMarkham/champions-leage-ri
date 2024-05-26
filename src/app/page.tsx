@@ -1,16 +1,40 @@
-// pages/index.tsx
-
 import { Button } from "@headlessui/react";
 import Link from "next/link";
+import Image from "next/image";
+import logo from "/public/logo.svg";
+import PageWrapper from "@/components/ui/PageWrapper";
 
 export default function Home() {
   return (
-    <section className="flex flex-col justify-center items-center text-gray-800 text-center h-full">
-      <h1 className="text-5xl font-bold mb-4">Welcome to the Champions League</h1>
-      <p className="text-2xl mb-8">The Ultimate Competition for Disc Golf Enthusiasts</p>
-      <Link href="/rules">
-        <Button className="bg-blue-500 px-4 py-2 rounded-full text-white"> Learn More</Button>
-      </Link>
-    </section>
+    <PageWrapper className="p-8 max-w-4xl mx-auto">
+      <hgroup className="text-center mb-8 space-y-2">
+        <h1 className="text-4xl font-bold">Welcome to Champions League RI</h1>
+        <h2 className="text-2xl text-gray-700">Connecting Competitors, Creating Community.</h2>
+      </hgroup>
+      <p className="text-lg mb-8 text-center max-w-[400px]">
+        Join our community and participate in the league. Whether you're a seasoned pro or a
+        beginner, we have something for everyone.
+      </p>
+      <figure className="flex flex-col items-center mb-8">
+        <Image src={logo} alt="Disc Golf" className="w-64 h-auto" />
+        <figcaption className="font-bold tracking-widest text-lg mt-4">Champions League RI</figcaption>
+      </figure>
+      <section className="mb-8">
+        <h3 className="text-xl font-semibold mb-2">Upcoming Events</h3>
+        <p>
+          Stay tuned for our upcoming events. Check out our calendar and make sure to register early to secure your
+          spot.
+        </p>
+      </section>
+      <section className="mb-8">
+        <h3 className="text-xl font-semibold mb-2">League Standings</h3>
+        <p>Follow the standings of your favorite players and teams. Get the latest updates on scores and rankings.</p>
+      </section>
+      <div className="text-center">
+        <Link href="/rules">
+          <Button className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-full text-white">Learn More</Button>
+        </Link>
+      </div>
+    </PageWrapper>
   );
 }

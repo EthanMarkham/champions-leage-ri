@@ -108,6 +108,30 @@ export async function getCurrentEvent() {
   return event;
 }
 
+export async function getEventById(id: number) {
+  const event = await prisma.event.findFirst({
+    where: {
+      id: {
+        equals: id,
+      },
+    },
+    include: {
+      layout: {
+        include: {
+          holes: true,
+          course: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return event;
+}
+
 export async function getDetailedEventList() {
   const events = await prisma.event.findMany({
     include: {

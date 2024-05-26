@@ -1,5 +1,6 @@
 // src/app/scorecard/[id]/page.tsx
 import ScoreTable from "@/components/scorecard/ScoreTable";
+import PageWrapper from "@/components/ui/PageWrapper";
 import { getScoreSheetDetails } from "@/lib/scorecard";
 
 interface Params {
@@ -41,7 +42,7 @@ export default async function ScoreCardPage({ params }: { params: Params }) {
   }
 
   return (
-    <div>
+    <PageWrapper>
       <h1>Score Sheet Group: {scoreSheetGroup.roundHash}</h1>
       <ScoreTable
         scoreSheets={scoreSheetGroup.scoreSheets}
@@ -50,7 +51,7 @@ export default async function ScoreCardPage({ params }: { params: Params }) {
         holes={scoreSheetGroup.event.layout.holes}
       />
       {/* Render event, scoreSheets, and payments as needed */}
-    </div>
+    </PageWrapper>
   );
 }
 

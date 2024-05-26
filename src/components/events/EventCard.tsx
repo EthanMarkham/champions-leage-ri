@@ -17,7 +17,7 @@ const EventDetail: React.FC<{ label: string; value?: string }> = ({ label, value
 
 const EventCard: React.FC<EventDetailsType> = (event) => {
   return (
-    <Card key={event.id} className="flex flex-col md:flex-row gap-4 p-4 max-w-3xl mx-auto">
+    <Card key={event.id} className="flex flex-col md:flex-row gap-6 p-6 w-full mx-auto shadow-lg rounded-lg">
       <Image
         src={event.layout.course.image}
         alt={event.layout.course.name}
@@ -26,15 +26,23 @@ const EventCard: React.FC<EventDetailsType> = (event) => {
         className="rounded-full object-cover aspect-square mx-auto md:mx-0"
       />
       <div className="flex flex-col flex-1">
-        <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-4 text-center md:text-left">{`${event.layout.course.name} - ${event.layout.name}`}</h2>
-        <div className="space-y-1.5">
+        <hgroup className="mb-3 text-center w-fit">
+          <h2 className="text-md md:text-xl font-bold text-center md:text-left">
+            {event.layout.course.name}
+            <span className="hidden sm:inline-block">{` - ${event.layout.name}`}</span>
+          </h2>
+          <h3 className="text-sm text-gray-400 inline sm:hidden">{event.layout.name}</h3>
+        </hgroup>
+        <div className="space-y-2">
           <EventDetail label="When:" value={dateToMonthYearDisplay(event.time)} />
           <EventDetail label="Total Rounds Played:" value={event.totalScoreSheets.toString()} />
           <EventDetail label="Hot Round:" value={`${event.bestScore} by ${event.bestScoreUsername}`} />
           <EventDetail label="Average Score:" value={event.averageScore ? event.averageScore.toString() : "---"} />
         </div>
         <Link href={`/events/${event.id}`} passHref>
-          <Button className="mt-4 inline-block text-blue-600 hover:text-blue-800 font-medium mx-auto md:mx-0">View Event</Button>
+          <Button className="mt-4 inline-block bg-blue-600 text-white hover:bg-blue-700 font-medium rounded-md py-2 px-4 mx-auto md:mx-0">
+            View Event
+          </Button>
         </Link>
       </div>
     </Card>
