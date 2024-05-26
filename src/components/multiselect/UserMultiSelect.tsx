@@ -1,4 +1,5 @@
-// components/MultiSelect/UserMultiSelect.tsx
+'use client';
+
 import { getUsers } from "@/lib/users";
 import React from "react";
 import { Multiselect, MultiSelectExtensionProp } from "./MultiSelect";

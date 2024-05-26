@@ -10,7 +10,7 @@ const Card = (props: HTMLAttributes<HTMLDivElement>) => {
     <div
       {...props}
       className={twMerge(
-        "border border-gray-300 rounded-lg shadow-lg space-x-6 hover:shadow-xl transition-shadow duration-300 items-center text-gray-800 bg-gray-100 p-4",
+        "border border-gray-300 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 items-center text-gray-800 bg-gray-100 p-4 overflow-hidden",
         props.className
       )}
     />

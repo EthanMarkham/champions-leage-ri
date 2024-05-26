@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import crypto from "crypto";
 import { processScoreData, ScoreData } from "@/lib/scorecard";
 import { getDateFromUdiscTime } from "@/lib/date";
 import { parseCSV } from "@/lib/csv";
 
-async function validateFormData(
+// Validate form data
+async function parseFormData(
   formData: FormData
 ): Promise<{ file?: Blob; players?: { id: number; name: string }[]; error?: string }> {
   const file = formData.get("file");
@@ -24,14 +24,15 @@ async function validateFormData(
   }
 
   const players = JSON.parse(playersParam.toString()) as { id: number; name: string }[];
-  if (!Array.isArray(players) || !players.every((user) => user.name && user.id)) {
+  if (!Array.isArray(players) || !players.every((player) => player.name && player.id)) {
     return { error: "Players parameter invalid" };
   }
 
   return { file, players };
 }
 
-async function handleCSVData(
+// Build round data from CSV file and players
+async function buildRoundData(
   file: Blob,
   players: { id: number; name: string }[]
 ): Promise<{ scoreData?: ScoreData; error?: string }> {
@@ -44,8 +45,8 @@ async function handleCSVData(
 
     const firstRow = results[0];
     const expectedKeys = ["PlayerName", "CourseName", "LayoutName", "StartDate", "EndDate", "Total"];
-    for (const expectedKey of expectedKeys) {
-      if (!firstRow.hasOwnProperty(expectedKey)) {
+    for (const key of expectedKeys) {
+      if (!firstRow.hasOwnProperty(key)) {
         return { error: "Unable to parse CSV" };
       }
     }
@@ -67,6 +68,7 @@ async function handleCSVData(
   }
 }
 
+// Handle POST request
 export async function POST(req: NextRequest) {
   try {
     if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
@@ -74,13 +76,13 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
-    const { file, players, error: validationError } = await validateFormData(formData);
+    const { file, players, error: validationError } = await parseFormData(formData);
 
     if (validationError) {
       return NextResponse.json({ message: validationError }, { status: 400 });
     }
 
-    const { scoreData, error: csvError } = await handleCSVData(file!, players!);
+    const { scoreData, error: csvError } = await buildRoundData(file!, players!);
 
     if (csvError) {
       return NextResponse.json({ message: csvError }, { status: 400 });
@@ -91,7 +93,7 @@ export async function POST(req: NextRequest) {
     if (output.errors.length === 0) {
       return NextResponse.json({ message: "Got it!", ...output }, { status: 200 });
     }
-    return NextResponse.json({ message: "Some ish!", ...output }, { status: 422 });
+    return NextResponse.json({ message: "Some issues occurred!", ...output }, { status: 422 });
   } catch (error) {
     return NextResponse.json({ message: (error as Error).message }, { status: 500 });
   }

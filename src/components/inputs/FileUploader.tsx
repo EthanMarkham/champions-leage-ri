@@ -4,7 +4,7 @@ import { useState, ChangeEvent, ReactNode } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface FileUploaderProps {
-  onFileChange: (file: File | null) => void;
+  onFileChange?: (file: File | null) => void;
   children?: ReactNode;
 }
 
@@ -16,7 +16,9 @@ export default function FileUploader({ onFileChange, children }: FileUploaderPro
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      onFileChange(selectedFile);
+      if (onFileChange) {
+        onFileChange(selectedFile);
+      }
     }
   };
 
@@ -36,19 +38,23 @@ export default function FileUploader({ onFileChange, children }: FileUploaderPro
     const droppedFile = e.dataTransfer.files?.[0];
     if (droppedFile) {
       setFile(droppedFile);
-      onFileChange(droppedFile);
+      if (onFileChange) {
+        onFileChange(droppedFile);
+      }
       e.dataTransfer.clearData();
     }
   };
 
   const handleRemoveFile = () => {
     setFile(null);
-    onFileChange(null);
+    if (onFileChange) {
+      onFileChange(null);
+    }
   };
 
   return (
     <div
-      className={`relative flex items-center justify-center w-full border-4 border-dashed ${
+      className={`relative flex items-center justify-center w-full border-2 border-dashed ${
         isDragging ? "border-blue-500" : "border-gray-300"
       } rounded-lg`}
       onDragOver={handleDragOver}
@@ -68,21 +74,7 @@ export default function FileUploader({ onFileChange, children }: FileUploaderPro
               </button>
             </>
           ) : (
-            children || (
-              <>
-                <div className="flex flex-auto max-h-48 w-2/5 mx-auto -mt-10">
-                  <img
-                    className="has-mask h-36 object-center"
-                    src="https://img.freepik.com/free-vector/image-upload-concept-landing-page_52683-27130.jpg?size=338&ext=jpg"
-                    alt="Upload illustration"
-                  />
-                </div>
-                <p className="text-gray-500 pointer-none hidden md:block">
-                  <span className="text-sm">Drag and drop</span> files here <br /> or{" "}
-                  <span className="text-blue-600 hover:underline">select a file</span> from your computer
-                </p>
-              </>
-            )
+            children
           )}
         </div>
         <input type="file" className="hidden" onChange={handleFileChange} />

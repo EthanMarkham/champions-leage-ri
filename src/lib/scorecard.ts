@@ -67,7 +67,7 @@ export async function processScoreData(data: ScoreData): Promise<Output> {
   });
 
   if (existingScoreSheetGroup) {
-    output.errors.push({ message: "Round hash already exists", hash });
+    output.errors.push({ message: "Looks like the round already exists!", hash });
     return output;
   }
 
@@ -220,11 +220,13 @@ export const getUserScoresByEventId = cache(async (id: number) => {
     return acc;
   }, {});
 
-  const usersScores = Object.values(scoresByUser).map((userScore) => ({
-    ...userScore,
-    average: userScore.scoreSheets.reduce((prev, cur) => prev + cur.total, 0) / userScore.scoreSheets.length,
-    best: userScore.scoreSheets.reduce((prev, cur) => (prev > cur.total ? prev : cur.total), 0),
-  }));
+  const usersScores = Object.values(scoresByUser)
+    .map((userScore) => ({
+      ...userScore,
+      average: userScore.scoreSheets.reduce((prev, cur) => prev + cur.total, 0) / userScore.scoreSheets.length,
+      best: userScore.scoreSheets.reduce((prev, cur) => (prev > cur.total ? prev : cur.total), 0),
+    }))
+    .sort((a, b) => (a.best > b.best ? 1 : -1));
 
   return usersScores;
 });

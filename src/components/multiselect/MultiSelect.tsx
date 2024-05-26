@@ -1,10 +1,12 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 interface MultiselectProps<T> {
   searchFunction: (query: string) => Promise<T[]>;
   getItemLabel: (item: T) => string;
   getItemId: (item: T) => number;
-  onSelectionChange: (selectedItems: T[]) => void;
+  onSelectionChange?: (selectedItems: T[]) => void;
   placeHolderText?: string;
   containerProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 }
@@ -36,7 +38,9 @@ export const Multiselect = <T,>({
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
   useEffect(() => {
-    onSelectionChange(selectedItems);
+    if (onSelectionChange) {
+      onSelectionChange(selectedItems);
+    }
   }, [selectedItems, onSelectionChange]);
 
   const fetchItems = async (query: string) => {
