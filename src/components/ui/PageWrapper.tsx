@@ -5,7 +5,7 @@ export default function PageWrapper(props: DetailedHTMLProps<HTMLAttributes<HTML
   return (
     <main
       {...props}
-      className={twMerge("p-8 lg:p-12 bg-no-repeat z-10 grow overflow-auto relative pb-24 md:pb-8", props.className)}
+      className={twMerge("p-3 md:p-8 lg:p-12 bg-no-repeat z-10 grow overflow-auto relative pb-24 md:pb-8", props.className)}
     />
   );
 }

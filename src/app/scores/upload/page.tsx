@@ -104,8 +104,8 @@ export default function ScoreCardUpload() {
   };
 
   return (
-    <PageWrapper className="h-full">
-      <Card className="max-w-3xl shadow w-full p-10 bg-white rounded-xl relative mx-auto overflow-visible">
+    <PageWrapper className="h-full flex items-center">
+      <Card className="max-w-3xl shadow w-full p-8 lg:p-10 bg-white rounded-xl relative mx-auto overflow-visible">
         <SpinnerCover show={isLoading} />
 
         <Header message={message} text="Submit your ScoreCard!" subText="Udisc &#x27A1; Round &#x27A1; Export CSV" />
