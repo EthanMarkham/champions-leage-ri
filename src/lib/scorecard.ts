@@ -224,7 +224,7 @@ export const getUserScoresByEventId = cache(async (id: number) => {
     .map((userScore) => ({
       ...userScore,
       average: userScore.scoreSheets.reduce((prev, cur) => prev + cur.total, 0) / userScore.scoreSheets.length,
-      best: userScore.scoreSheets.reduce((prev, cur) => (prev > cur.total ? prev : cur.total), 0),
+      best: userScore.scoreSheets.reduce((prev, cur) => (prev < cur.total ? prev : cur.total), userScore.scoreSheets[0].total),
     }))
     .sort((a, b) => (a.best > b.best ? 1 : -1));
 

@@ -16,6 +16,6 @@ export function getScoreColorHex(score: Score, hole: Hole) {
   } else if (score.score > hole.par) {
     return "#dc2626";
   } else {
-    return "#374151";
+    return "transparent";
   }
 }

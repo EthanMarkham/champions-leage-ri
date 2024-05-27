@@ -63,6 +63,7 @@ export default function RootLayout({
           inter.className,
           "bg-hero-pattern bg-cover bg-center h-screen relative flex flex-col max-h-screen overflow-hidden"
         )}
+        suppressHydrationWarning={true}
       >
         <NavBar />
         {children}

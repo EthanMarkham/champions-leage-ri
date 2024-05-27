@@ -35,8 +35,6 @@ export const revalidate = 3600; // revalidate the data at most every hour
 
 export default async function ScoreCardPage({ params }: { params: Params }) {
   const scoreSheetGroup = await fetchScoreSheetGroup(params.id);
-  console.log(scoreSheetGroup);
-
   if (!scoreSheetGroup) {
     return <div>Loading...</div>;
   }
@@ -54,4 +52,3 @@ export default async function ScoreCardPage({ params }: { params: Params }) {
     </PageWrapper>
   );
 }
-

@@ -26,16 +26,16 @@ export default function ScoreExpander({ total, id, holes, ...scoreSheet }: Score
       >
         <PopoverPanel
           as="div"
-          className="z-20 p-4 bg-gray-500/40 backdrop-blur-sm shadow-lg rounded-lg"
+          className="z-20 p-2 bg-gray-700/80 backdrop-blur-sm shadow-lg rounded-lg"
           anchor={{
             to: "bottom start",
             padding: '10px',
             gap: '5px'
           }}
         >
-          <div className="grid grid-cols-5 md:grid-cols-9 gap-4 ">
+          <div className="grid grid-cols-5 md:grid-cols-9 gap-[1px] ">
             {scoreSheet.scores.map((score, i) => (
-              <div key={score.id} className="flex flex-col items-center text-center text-white bg-gray-800/50 rounded-lg p-2">
+              <div key={score.id} className="flex flex-col items-center text-center text-white p-2">
                 <p className="text-lg font-bold">{holes[i].hole}</p>
                 <p className="text-xs font-light">{holes[i].distance}</p>
                 <p

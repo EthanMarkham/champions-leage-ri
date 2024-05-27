@@ -23,14 +23,14 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      <div className=" w-full flex justify-start items-center overflow-hidden bg-gray-800/40 px-6 py-2.5 sm:px-3.5">
+      <div className="w-full flex justify-start items-center overflow-hidden bg-gray-800/40 px-6 py-2.5 sm:px-3.5">
         <Link href="/events">
           <Button className="-m-3 p-3 focus-visible:outline-offset-[-4px]">
             <span className="sr-only">Dismiss</span>
             <ArrowUturnLeftIcon className="h-5 w-5 text-gray-900" />
           </Button>
         </Link>
-        <h1 className="grow text-center font-bold text-black/50 tracking-widest text-sm">
+        <h1 className="grow text-center font-bold text-black/50 tracking-widest text-sm sm:text-base">
           {event
             ? `${event.layout.course.name} - ${event.layout.name} - ${dateToMonthYearDisplay(event.time)}`
             : "Event not found"}
@@ -42,9 +42,9 @@ export default async function Page({ params }: PageProps) {
           {scoreSheets.length > 0 ? (
             scoreSheets.map(({ user, scoreSheets, average, best }) => (
               <Card key={user.id} className="p-4 shadow-md rounded-lg relative overflow-visible">
-                <div className="flex flex-row items-center justify-between mb-2">
-                  <span className="text-lg font-semibold">{user.name}</span>
-                  <div className="flex items-center space-x-4 text-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                  <span className="text-lg font-semibold text-center md:text-left">{user.name}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-sm mt-2 sm:mt-0">
                     <div className="font-semibold">
                       Best: <span className="font-normal">{best}</span>
                     </div>
@@ -61,7 +61,7 @@ export default async function Page({ params }: PageProps) {
               </Card>
             ))
           ) : (
-            <p>No scores available</p>
+            <p className="text-center">No scores available</p>
           )}
         </div>
       </PageWrapper>
