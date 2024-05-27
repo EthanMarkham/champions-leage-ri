@@ -32,3 +32,18 @@ export function dateToMonthYearDisplay(targetDate: Date) {
   return targetDate.toLocaleDateString(undefined, options);
 }
 
+
+export function dateStarted(targetDate: Date) {
+  const currentDate = new Date();
+
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth(); // Months are 0-based in JavaScript
+
+  const targetYear = targetDate.getFullYear();
+  const targetMonth = targetDate.getMonth(); // Months are 0-based in JavaScript
+
+  return currentYear < targetYear || currentMonth > targetMonth;
+}
+
+
+
