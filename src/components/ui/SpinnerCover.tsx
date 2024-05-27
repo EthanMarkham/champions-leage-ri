@@ -1,7 +1,11 @@
 import { Transition } from "@headlessui/react";
-import SpinnerPage from "./SpinnerPage";
+import SpinnerPage, { SpinnerPageProps } from "@/components/ui/SpinnerPage";
+import { twMerge } from "tailwind-merge";
 
-const SpinnerCover = ({ show }: { show: boolean }) => {
+interface SpinnerCoverProps extends SpinnerPageProps {
+  show: boolean;
+}
+const SpinnerCover = ({ show, spinnerProps, className }: SpinnerCoverProps) => {
   return (
     <Transition
       show={show}
@@ -13,12 +17,14 @@ const SpinnerCover = ({ show }: { show: boolean }) => {
       leaveTo="opacity-0"
     >
       <SpinnerPage
-        className="bg-black/60 z-10 absolute top-0 left-0 w-full h-full pointer-events-none"
-        spinnerProps={{ className: "border-white border-t-transparent border-4" }}
+        className={twMerge("z-10 absolute top-0 left-0 w-full h-full pointer-events-none", className)}
+        spinnerProps={{
+          ...spinnerProps,
+          className: twMerge("border-white border-t-transparent border-4", spinnerProps?.className),
+        }}
       />
     </Transition>
   );
 };
 
 export default SpinnerCover;
-

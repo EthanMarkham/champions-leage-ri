@@ -3,23 +3,26 @@
 import { FormEvent, Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { twMerge } from "tailwind-merge";
 import Card from "@/components/ui/Card";
 import SpinnerCover from "@/components/ui/SpinnerCover";
 import Header from "@/components/ui/Header";
 import { UserMessageProps } from "@/components/ui/Message";
-import Button from "@/components/inputs/Button";
 import PageWrapper from "@/components/ui/PageWrapper";
+import { Fieldset, Field, Label, Description, Input, Button } from "@headlessui/react";
+import { twMerge } from "tailwind-merge";
+import { UserSearchModel } from "@/lib/users";
+import { UserPlusIcon } from "@heroicons/react/20/solid";
+import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 
-const FileUploader = dynamic(() => import("@/components/inputs/FileUploader"), { ssr: false });
-const UserMultiSelect = dynamic(() => import("@/components/multiselect/UserMultiSelect"), { ssr: false });
+const PlayerCombobox = dynamic(() => import("@/components/scoreForm/PlayerCombobox"), { ssr: false });
 
 export default function ScoreCardUpload() {
   const [file, setFile] = useState<File | null>(null);
-  const [players, setPlayers] = useState<{ name: string; id: number }[]>([]);
   const [message, setMessage] = useState<UserMessageProps>();
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [selectedPeople, setSelectedPeople] = useState<UserSearchModel[]>([]);
+  const [fileName, setFileName] = useState("No file chosen");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUpload = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ export default function ScoreCardUpload() {
       return;
     }
 
-    if (players.length < 2) {
+    if (selectedPeople.length < 2) {
       setMessage({
         message: "Please add at least 2 players.",
         type: "error",
@@ -54,7 +57,7 @@ export default function ScoreCardUpload() {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("players", JSON.stringify(players));
+    formData.append("players", JSON.stringify(selectedPeople));
 
     try {
       const res = await fetch("/api/scorecard", {
@@ -83,43 +86,72 @@ export default function ScoreCardUpload() {
     }
   };
 
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    setFile(file);
+    setFileName(file ? file.name : "No file chosen");
+  };
+
   return (
-    <PageWrapper>
-      <Card className="sm:max-w-lg w-full p-10 bg-white rounded-xl relative mx-auto">
+    <PageWrapper className="h-full">
+      <Card className="max-w-3xl shadow w-full p-10 bg-white rounded-xl relative mx-auto overflow-visible">
         <SpinnerCover show={isLoading} />
 
         <Header message={message} text="Submit your ScoreCard!" subText="Udisc &#x27A1; Round &#x27A1; Export CSV" />
-
-        <form className="mt-2 space-y-3" onSubmit={handleUpload}>
-          <Suspense fallback={"loading..."}>
-            <div className="mb-2">
-              <label className="text-sm font-bold text-gray-500 tracking-wide">Players</label>
-              <UserMultiSelect
-                containerProps={{ className: "mb-2" }}
-                onSelectionChange={(selectedItems) => setPlayers(selectedItems)}
-                placeHolderText="Search For Players..."
-              />
-            </div>
-            <FileUploader onFileChange={setFile}>
-              <div className="text-gray-500 pointer-none relative w-full h-full flex flex-col items-center justify-center">
-                <p className="text-sm text-gray-300 absolute top-0 right-0 hidden md:block">File type: CSV only</p>
-                <p className="text-sm hidden md:block">Drag and drop your CSV here</p>
-                <p className="hidden md:block">
-                  Or <span className="text-blue-600 hover:underline">select a file</span> from your computer
-                </p>
-                <p className="text-sm block md:hidden">Select your CSV</p>
+        <Suspense
+          fallback={
+            <SpinnerCover
+              show={true}
+              className="w-full h-32 relative"
+              spinnerProps={{ className: "border-black/50 border-2 border-t-transparent h-8 w-8" }}
+            />
+          }
+        >
+          <Fieldset as="form" className="mt-2 space-y-8 relative overflow-visible w-full" onSubmit={handleUpload}>
+            <Field className="relative">
+              <Label className="block text-gray-700 mb-2">Add Players</Label>
+              <PlayerCombobox selectedPeople={selectedPeople} setSelectedPeople={setSelectedPeople} />
+            </Field>
+            <Field className="w-full">
+              <Label className="text-sm font-medium text-gray-700" htmlFor="file-upload">
+                CSV Upload
+              </Label>
+              <Description className="text-xs text-gray-500 mb-2">Settings &#x2192; Export to CSV</Description>
+              <div className="relative">
+                <Input
+                  type="file"
+                  id="file-upload"
+                  className={twMerge("absolute inset-0 w-full h-full opacity-0 cursor-pointer")}
+                  onChange={handleFileChange}
+                />
+                <div
+                  className={twMerge(
+                    "flex gap-1 items-center justify-between h-9 w-full rounded-md bg-white px-3 py-1 text-sm transition-colors",
+                    "border border-gray-400 rounded-lg shadow-sm",
+                    "text-gray-700 font-medium placeholder-gray-400",
+                    "focus-within:outline-none focus-within:ring-1 focus-within:ring-blue-500",
+                    "disabled:cursor-not-allowed disabled:opacity-50",
+                    "hover:bg-blue-100 transition-color duration-300"
+                  )}
+                >
+                  <span className="truncate">{fileName}</span>
+                  <ArrowUpTrayIcon className="w-[20px] text-blue-500 hover:text-blue-900 transition-colors duration-300 ease-in-out" />
+                </div>
               </div>
-            </FileUploader>
-          </Suspense>
-
-          <Button
-            type="submit"
-            className="my-5 w-full flex justify-center bg-blue-500 text-gray-100 p-4 rounded-full tracking-wide font-semibold focus:outline-none focus:shadow-outline hover:bg-blue-600 shadow-lg cursor-pointer transition ease-in duration-300"
-            disabled={isLoading}
-          >
-            {isLoading ? "Uploading..." : "Upload"}
-          </Button>
-        </form>
+            </Field>
+            <Button
+              type="submit"
+              className={twMerge(
+                "bg-blue-600 text-white p-2 px-4 text-md rounded-lg tracking-wide font-semibold shadow-lg cursor-pointer block mx-auto mt-10",
+                "focus:shadow-outline hover:bg-blue-700 focus:outline-none",
+                "transition ease-in duration-300"
+              )}
+              disabled={isLoading}
+            >
+              {isLoading ? "Submitting..." : "Submit"}
+            </Button>
+          </Fieldset>
+        </Suspense>
       </Card>
     </PageWrapper>
   );

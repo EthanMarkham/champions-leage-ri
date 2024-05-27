@@ -1,3 +1,5 @@
+import { User } from "@prisma/client";
+
 // utils/users.ts
 type GetUsersParams = {
   name?: string;
@@ -6,6 +8,8 @@ type GetUsersParams = {
   sort?: "asc" | "desc";
   orderByField?: "name" | "id";
 };
+
+export type UserSearchModel = Omit<User, "email">;
 
 export const getUsers = async (params?: GetUsersParams) => {
   try {

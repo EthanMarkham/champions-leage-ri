@@ -1,7 +1,7 @@
 import React, { HTMLAttributes, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-interface SpinnerPageProps extends HTMLAttributes<HTMLDivElement> {
+export interface SpinnerPageProps extends HTMLAttributes<HTMLDivElement> {
   spinnerProps?: HTMLAttributes<HTMLDivElement>;
 }
 
