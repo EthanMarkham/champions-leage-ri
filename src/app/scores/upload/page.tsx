@@ -1,7 +1,6 @@
 "use client";
 
-import { FormEvent, Suspense, useState } from "react";
-import dynamic from "next/dynamic";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Card from "@/components/ui/Card";
 import SpinnerCover from "@/components/ui/SpinnerCover";
@@ -21,6 +20,20 @@ export default function ScoreCardUpload() {
   const [selectedPeople, setSelectedPeople] = useState<UserSearchModel[]>([]);
   const [fileName, setFileName] = useState("No file chosen");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if ("launchQueue" in window) {
+      (window.launchQueue as any).setConsumer((launchParams: { files: string | any[] }) => {
+        if (!launchParams.files.length) {
+          return;
+        }
+
+        const file = launchParams.files[0];
+        setFile(file);
+        setFileName(file.name);
+      });
+    }
+  }, []);
 
   const handleUpload = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
