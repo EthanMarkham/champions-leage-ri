@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { NavigationItem } from "@/components/nav/NavBar_Bad";
+import { NavigationItem } from "@/components/nav/NavBar";
 import { MenuItems, MenuItem } from "@headlessui/react";
 import { Fragment } from "react";
 import { twMerge } from "tailwind-merge";
