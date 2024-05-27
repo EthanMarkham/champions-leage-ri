@@ -76,9 +76,8 @@ const Rules = async () => {
         <Card className="p-8 bg-white rounded-lg shadow-md">
           <h2 className="text-3xl font-semibold mb-4 text-blue-900">Course Schedule</h2>
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg text-gray-700">
-            {" "}
             {events.map((event) => (
-              <li className="text-sm tracking-tighter">
+              <li className="text-sm tracking-tighter" key={event.id}>
                 {dateToMonthYearDisplay(event.time)} - {event.layout.course.name} - {event.layout.name}
               </li>
             ))}

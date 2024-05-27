@@ -12,7 +12,7 @@ export default function Home() {
         <h2 className="text-lg text-gray-700/70">Connecting Competitors, Creating Community.</h2>
       </hgroup>
       <p className="text-lg mb-8 text-center max-w-[400px]">
-        Join our community and participate in the league. Whether you're a seasoned pro or a
+        Join our community and participate in the league. Whether you&apos;re a seasoned pro or a
         beginner, we have something for everyone.
       </p>
       <figure className="flex flex-col items-center mb-8">
