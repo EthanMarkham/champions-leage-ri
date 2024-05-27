@@ -42,7 +42,7 @@ export function dateStarted(targetDate: Date) {
   const targetYear = targetDate.getFullYear();
   const targetMonth = targetDate.getMonth(); // Months are 0-based in JavaScript
 
-  return currentYear < targetYear || currentMonth > targetMonth;
+  return currentYear < targetYear || currentMonth >= targetMonth;
 }
 
 
