@@ -33,7 +33,7 @@ export default function ScoreExpander({ total, id, holes, ...scoreSheet }: Score
             gap: '5px'
           }}
         >
-          <div className="grid grid-cols-5 md:grid-cols-9 gap-[1px] ">
+          <div className="grid grid-cols-6 md:grid-cols-9 gap-[1px] ">
             {scoreSheet.scores.map((score, i) => (
               <div key={score.id} className="flex flex-col items-center text-center text-white p-2">
                 <p className="text-lg font-bold">{holes[i].hole}</p>

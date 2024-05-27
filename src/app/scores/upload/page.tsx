@@ -11,10 +11,8 @@ import PageWrapper from "@/components/ui/PageWrapper";
 import { Fieldset, Field, Label, Description, Input, Button } from "@headlessui/react";
 import { twMerge } from "tailwind-merge";
 import { UserSearchModel } from "@/lib/users";
-import { UserPlusIcon } from "@heroicons/react/20/solid";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
-
-const PlayerCombobox = dynamic(() => import("@/components/scoreForm/PlayerCombobox"), { ssr: false });
+import PlayerCombobox from "@/components/scoreForm/PlayerCombobox";
 
 export default function ScoreCardUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -98,60 +96,51 @@ export default function ScoreCardUpload() {
         <SpinnerCover show={isLoading} />
 
         <Header message={message} text="Submit your ScoreCard!" subText="Udisc &#x27A1; Round &#x27A1; Export CSV" />
-        <Suspense
-          fallback={
-            <SpinnerCover
-              show={true}
-              className="w-full h-32 relative"
-              spinnerProps={{ className: "border-black/50 border-2 border-t-transparent h-8 w-8" }}
-            />
-          }
-        >
-          <Fieldset as="form" className="mt-2 space-y-8 relative overflow-visible w-full" onSubmit={handleUpload}>
-            <Field className="relative">
-              <Label className="block text-gray-700 mb-2">Add Players</Label>
-              <PlayerCombobox selectedPeople={selectedPeople} setSelectedPeople={setSelectedPeople} />
-            </Field>
-            <Field className="w-full">
-              <Label className="text-sm font-medium text-gray-700" htmlFor="file-upload">
-                CSV Upload
-              </Label>
-              <Description className="text-xs text-gray-500 mb-2">Settings &#x2192; Export to CSV</Description>
-              <div className="relative">
-                <Input
-                  type="file"
-                  id="file-upload"
-                  className={twMerge("absolute inset-0 w-full h-full opacity-0 cursor-pointer")}
-                  onChange={handleFileChange}
-                />
-                <div
-                  className={twMerge(
-                    "flex gap-1 items-center justify-between h-9 w-full rounded-md bg-white px-3 py-1 text-sm transition-colors",
-                    "border border-gray-400 rounded-lg shadow-sm",
-                    "text-gray-700 font-medium placeholder-gray-400",
-                    "focus-within:outline-none focus-within:ring-1 focus-within:ring-blue-500",
-                    "disabled:cursor-not-allowed disabled:opacity-50",
-                    "hover:bg-blue-100 transition-color duration-300"
-                  )}
-                >
-                  <span className="truncate">{fileName}</span>
-                  <ArrowUpTrayIcon className="w-[20px] text-blue-500 hover:text-blue-900 transition-colors duration-300 ease-in-out" />
-                </div>
+
+        <Fieldset as="form" className="mt-2 space-y-8 relative overflow-visible w-full" onSubmit={handleUpload}>
+          <Field className="relative">
+            <Label className="block text-gray-700 mb-2">Add Players</Label>
+            <PlayerCombobox selectedPeople={selectedPeople} setSelectedPeople={setSelectedPeople} />
+          </Field>
+          <Field className="w-full">
+            <Label className="text-sm font-medium text-gray-700" htmlFor="file-upload">
+              CSV Upload
+            </Label>
+            <Description className="text-xs text-gray-500 mb-2">Settings &#x2192; Export to CSV</Description>
+            <div className="relative">
+              <Input
+                type="file"
+                id="file-upload"
+                className={twMerge("absolute inset-0 w-full h-full opacity-0 cursor-pointer")}
+                onChange={handleFileChange}
+              />
+              <div
+                className={twMerge(
+                  "flex gap-1 items-center justify-between h-9 w-full rounded-md bg-white px-3 py-1 text-sm transition-colors",
+                  "border border-gray-300 rounded-lg shadow-sm group",
+                  "text-gray-700 font-medium placeholder-gray-400",
+                  "focus-within:outline-none focus-within:ring-1 focus-within:ring-blue-500",
+                  "disabled:cursor-not-allowed disabled:opacity-50",
+                  "hover:bg-blue-100 transition-color duration-300"
+                )}
+              >
+                <span className="truncate">{fileName}</span>
+                <ArrowUpTrayIcon className="w-[20px] text-gray-500 group-hover:text-gray-900 transition-colors duration-300 ease-in-out" />
               </div>
-            </Field>
-            <Button
-              type="submit"
-              className={twMerge(
-                "bg-blue-600 text-white p-2 px-4 text-md rounded-lg tracking-wide font-semibold shadow-lg cursor-pointer block mx-auto mt-10",
-                "focus:shadow-outline hover:bg-blue-700 focus:outline-none",
-                "transition ease-in duration-300"
-              )}
-              disabled={isLoading}
-            >
-              {isLoading ? "Submitting..." : "Submit"}
-            </Button>
-          </Fieldset>
-        </Suspense>
+            </div>
+          </Field>
+          <Button
+            type="submit"
+            className={twMerge(
+              "bg-blue-600 text-white p-2 px-4 text-md rounded-lg tracking-wide font-semibold shadow-lg cursor-pointer block mx-auto mt-10",
+              "focus:shadow-outline hover:bg-blue-700 focus:outline-none",
+              "transition ease-in duration-300"
+            )}
+            disabled={isLoading}
+          >
+            {isLoading ? "Submitting..." : "Submit"}
+          </Button>
+        </Fieldset>
       </Card>
     </PageWrapper>
   );

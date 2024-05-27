@@ -9,7 +9,7 @@ const Rules = async () => {
   const courses = await getCourses();
   const events = await getAllEvents();
   return (
-    <PageWrapper className="py-12 px-4 bg-gray-100">
+    <PageWrapper className="bg-gray-100">
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="grid gap-8 lg:grid-cols-2">
           <Card className="bg-white p-6 rounded-lg shadow-lg">

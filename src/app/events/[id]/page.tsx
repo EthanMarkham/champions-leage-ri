@@ -1,12 +1,10 @@
-import Button from "@/components/inputs/Button";
-import FieldGroup from "@/components/inputs/FieldGroup";
 import ScoreExpander from "@/components/scorecard/ScoreExpander";
 import Card from "@/components/ui/Card";
 import PageWrapper from "@/components/ui/PageWrapper";
 import { dateToMonthYearDisplay } from "@/lib/date";
 import { getEventById } from "@/lib/event";
 import { getUserScoresByEventId } from "@/lib/scorecard";
-import { PopoverGroup } from "@headlessui/react";
+import { Button } from "@headlessui/react";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 

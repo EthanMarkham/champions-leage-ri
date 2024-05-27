@@ -6,7 +6,7 @@ import Logo from "@/components/svg/Logo";
 
 export default function Home() {
   return (
-    <PageWrapper className="p-8 max-w-4xl mx-auto">
+    <PageWrapper className="max-w-4xl mx-auto">
       <hgroup className="text-center mb-8 space-y-2">
         <h1 className="text-4xl font-bold">Welcome to Champions League RI</h1>
         <h2 className="text-lg text-gray-700/70">Connecting Competitors, Creating Community.</h2>

@@ -9,6 +9,11 @@ type GetUsersParams = {
   orderByField?: "name" | "id";
 };
 
+type AddUserParams = {
+  name: string;
+  email: string;
+};
+
 export type UserSearchModel = Omit<User, "email">;
 
 export const getUsers = async (params?: GetUsersParams) => {
@@ -82,3 +87,25 @@ export function findMatchingUser(nameInput: string, users: { name: string; id: n
   // Return null if no match is found
   return null;
 }
+
+export const addUser = async ({ name, email }: AddUserParams): Promise<User | null> => {
+  try {
+    const res = await fetch("/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const newUser = await res.json();
+    return newUser;
+  } catch (error) {
+    console.error("Error adding user:", error);
+    return null;
+  }
+};

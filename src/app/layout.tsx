@@ -61,7 +61,7 @@ export default function RootLayout({
       <body
         className={twMerge(
           inter.className,
-          "bg-hero-pattern bg-cover bg-center h-screen relative flex flex-col max-h-screen overflow-hidden"
+          "bg-gray-300/80 bg-cover bg-center h-screen relative flex flex-col max-h-screen overflow-hidden"
         )}
         suppressHydrationWarning={true}
       >
