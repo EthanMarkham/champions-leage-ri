@@ -32,18 +32,26 @@ export function dateToMonthYearDisplay(targetDate: Date) {
   return targetDate.toLocaleDateString(undefined, options);
 }
 
-
-export function dateStarted(targetDate: Date) {
-  const currentDate = new Date();
-
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth(); // Months are 0-based in JavaScript
-
-  const targetYear = targetDate.getFullYear();
-  const targetMonth = targetDate.getMonth(); // Months are 0-based in JavaScript
-
-  return currentYear < targetYear || currentMonth >= targetMonth;
+function toEST(date: Date): Date {
+  // Convert date to 'America/New_York' timezone and return a new Date object
+  const options = { timeZone: 'America/New_York', hour12: false };
+  const estString = new Intl.DateTimeFormat('en-US', options).format(date);
+  const [month, day, year] = estString.split('/').map(Number);
+  return new Date(year, month - 1, day);
 }
 
+export function dateStarted(targetDate: Date): boolean {
+  const currentDate = new Date();
 
+  // Convert both dates to EST
+  const estCurrentDate = toEST(currentDate);
+  const estTargetDate = toEST(targetDate);
 
+  const currentYear = estCurrentDate.getFullYear();
+  const currentMonth = estCurrentDate.getMonth(); // Months are 0-based in JavaScript
+  const targetYear = estTargetDate.getFullYear();
+  const targetMonth = estTargetDate.getMonth() + 1; // Months are 0-based in JavaScript
+
+  console.log({ targetDate, test: targetDate.toLocaleDateString(), currentMonth, targetMonth });
+  return currentYear < targetYear || (currentYear === targetYear && currentMonth >= targetMonth);
+}
