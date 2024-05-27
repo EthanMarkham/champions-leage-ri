@@ -29,7 +29,7 @@ export default function ScoreExpander({ total, id, holes, ...scoreSheet }: Score
           anchor={{ to: "bottom start", gap: "4px" }}
         >
           {scoreSheet.scores.map((score, i) => (
-            <div className="text-center text-white [&>p]:p-x2 w-12 bg-gray-800 rounded-lg overflow-hidden">
+            <div key={score.id} className="text-center text-white [&>p]:p-x2 w-12 bg-gray-800 rounded-lg overflow-hidden">
               <p className="text-lg pt-2 font-bold">{holes[i].hole}</p>
               <p className="text-xs font-light pb-1">{holes[i].distance}</p>
               <p className="py-2" style={{ backgroundColor: getScoreColorHex(score, holes[i]) }}>
