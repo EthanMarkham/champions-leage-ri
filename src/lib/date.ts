@@ -52,6 +52,5 @@ export function dateStarted(targetDate: Date): boolean {
   const targetYear = estTargetDate.getFullYear();
   const targetMonth = estTargetDate.getMonth() + 1; // Months are 0-based in JavaScript
 
-  console.log({ targetDate, test: targetDate.toLocaleDateString(), currentMonth, targetMonth });
   return currentYear < targetYear || (currentYear === targetYear && currentMonth >= targetMonth);
 }
