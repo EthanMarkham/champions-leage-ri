@@ -1,4 +1,4 @@
-import { getScoreColorHex, getScoreColorClass } from "@/lib/score";
+import { getScoreColorHex } from "@/lib/score";
 import { getUserScoresByEventId } from "@/lib/scorecard";
 import { Popover, PopoverButton, PopoverPanel, Transition } from "@headlessui/react";
 import { Hole } from "@prisma/client";
@@ -13,11 +13,11 @@ interface ScoreExpanderProps extends ScoreDetails {
 export default function ScoreExpander({ total, id, holes, ...scoreSheet }: ScoreExpanderProps) {
   return (
     <Popover>
-      <PopoverButton className="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-800 rounded-lg border border-blue-300 hover:border-blue-500 text-sm cursor-pointer font-semibold text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-white">
+      <PopoverButton className="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-800 rounded-lg border border-blue-300 hover:border-blue-500 text-sm cursor-pointer font-semibold text-black/50 focus:outline-none">
         {total}
       </PopoverButton>
       <Transition
-        enter="transition ease-out duration-200"
+        enter="transition ease-out duration-300"
         enterFrom="opacity-0 translate-y-1"
         enterTo="opacity-100 translate-y-0"
         leave="transition ease-in duration-150"
@@ -25,18 +25,28 @@ export default function ScoreExpander({ total, id, holes, ...scoreSheet }: Score
         leaveTo="opacity-0 translate-y-1"
       >
         <PopoverPanel
-          className="z-20 flex flex-wrap overflow-hidden justify-start max-w-[90vw] w-fit gap-1"
-          anchor={{ to: "bottom start", gap: "4px" }}
+          as="div"
+          className="z-20 p-4 bg-gray-500/40 backdrop-blur-sm shadow-lg rounded-lg"
+          anchor={{
+            to: "bottom start",
+            padding: '10px',
+            gap: '5px'
+          }}
         >
-          {scoreSheet.scores.map((score, i) => (
-            <div key={score.id} className="text-center text-white [&>p]:p-x2 w-12 bg-gray-800 rounded-lg overflow-hidden">
-              <p className="text-lg pt-2 font-bold">{holes[i].hole}</p>
-              <p className="text-xs font-light pb-1">{holes[i].distance}</p>
-              <p className="py-2" style={{ backgroundColor: getScoreColorHex(score, holes[i]) }}>
-                {score.score}
-              </p>
-            </div>
-          ))}
+          <div className="grid grid-cols-5 md:grid-cols-9 gap-4 ">
+            {scoreSheet.scores.map((score, i) => (
+              <div key={score.id} className="flex flex-col items-center text-center text-white bg-gray-800/50 rounded-lg p-2">
+                <p className="text-lg font-bold">{holes[i].hole}</p>
+                <p className="text-xs font-light">{holes[i].distance}</p>
+                <p
+                  className="py-1 my-1 w-full rounded-md"
+                  style={{ backgroundColor: getScoreColorHex(score, holes[i]) }}
+                >
+                  {score.score}
+                </p>
+              </div>
+            ))}
+          </div>
         </PopoverPanel>
       </Transition>
     </Popover>
