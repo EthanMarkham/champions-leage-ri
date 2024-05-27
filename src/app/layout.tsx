@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { twMerge } from "tailwind-merge";
-import { NavBar } from "@/components/nav/NavBar";
+import { NavBar } from "@/components/nav/NavBar_Bad";
 
 const inter = Inter({ subsets: ["latin"] });
 

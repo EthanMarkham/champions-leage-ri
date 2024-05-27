@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-import { NavigationItem } from "@/components/nav/NavBar";
+import { NavigationItem } from "@/components/nav/NavBar_Bad";
 import { twMerge } from "tailwind-merge";
 import { usePathname } from "next/navigation";
 
