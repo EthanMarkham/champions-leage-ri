@@ -1,8 +1,7 @@
 
 import Link from "next/link";
-import { NavigationItem } from "@/components/nav/NavBar_Bad";
+import { NavigationItem } from "@/components/nav/NavBar";
 import { twMerge } from "tailwind-merge";
-import { usePathname } from "next/navigation";
 
 const DesktopLinks: React.FC<{ links: NavigationItem[] }> = ({ links }) => {
   return (

@@ -41,7 +41,7 @@ export default async function Page({ params }: PageProps) {
         <div className="flex flex-col w-full gap-4">
           {scoreSheets.length > 0 ? (
             scoreSheets.map(({ user, scoreSheets, average, best }) => (
-              <Card key={user.id} className="p-4 shadow-md rounded-lg">
+              <Card key={user.id} className="p-4 shadow-md rounded-lg relative overflow-visible">
                 <div className="flex flex-row items-center justify-between mb-2">
                   <span className="text-lg font-semibold">{user.name}</span>
                   <div className="flex items-center space-x-4 text-sm">
@@ -53,11 +53,11 @@ export default async function Page({ params }: PageProps) {
                     </div>
                   </div>
                 </div>
-                <PopoverGroup as="div" className="border-t border-gray-200 pt-2 flex gap-2 flex-wrap justify-start">
+                <div className="border-t border-gray-200 pt-2 flex gap-2 flex-wrap justify-start">
                   {scoreSheets.map((scoreSheet) => (
                     <ScoreExpander key={scoreSheet.id} {...scoreSheet} holes={event!.layout.holes} />
                   ))}
-                </PopoverGroup>
+                </div>
               </Card>
             ))
           ) : (

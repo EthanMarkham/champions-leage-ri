@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
+import { Menu, MenuButton } from "@headlessui/react";
 import { usePathname } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import MobileMenu from "@/components/nav/MobileMenu";
@@ -37,7 +37,7 @@ export const NavBar: React.FC = () => {
         <>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between md:justify-start h-16 items-center">
-              <div className="flex items-center relative justify-between w-full md:w-fit">
+              <div className="flex items-center relative justify-between w-full md:w-fit h-16 overflow-hidden">
                 <MenuButton className="relative inline-flex md:hidden items-center justify-center rounded-md p-2 text-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
@@ -51,9 +51,7 @@ export const NavBar: React.FC = () => {
               <DesktopLinks links={links} />
             </div>
           </div>
-          <MenuItems className="md:hidden">
-            <MobileMenu links={links} closeMenu={close} />
-          </MenuItems>
+          <MobileMenu links={links} closeMenu={close} />
         </>
       )}
     </Menu>

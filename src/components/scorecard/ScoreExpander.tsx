@@ -1,7 +1,8 @@
+import { getScoreColorHex, getScoreColorClass } from "@/lib/score";
 import { getUserScoresByEventId } from "@/lib/scorecard";
 import { Popover, PopoverButton, PopoverPanel, Transition } from "@headlessui/react";
-import ScoreTable from "./ScoreTable";
 import { Hole } from "@prisma/client";
+import { twMerge } from "tailwind-merge";
 
 type ScoreDetails = Awaited<ReturnType<typeof getUserScoresByEventId>>[number]["scoreSheets"][number];
 
@@ -24,10 +25,18 @@ export default function ScoreExpander({ total, id, holes, ...scoreSheet }: Score
         leaveTo="opacity-0 translate-y-1"
       >
         <PopoverPanel
-          anchor="bottom start"
-          className="divide-y divide-white/5 rounded-xl bg-black/45 text-sm/6 [--anchor-gap:var(--spacing-5)]  z-20"
+          className="z-20 flex flex-wrap overflow-hidden justify-start max-w-[90vw] w-fit gap-1"
+          anchor={{ to: "bottom start", gap: "4px" }}
         >
-          <ScoreTable showName={false} showPos={false} scoreSheets={[{ ...scoreSheet, id: id }]} holes={holes} />
+          {scoreSheet.scores.map((score, i) => (
+            <div className="text-center text-white [&>p]:p-x2 w-12 bg-gray-800 rounded-lg overflow-hidden">
+              <p className="text-lg pt-2 font-bold">{holes[i].hole}</p>
+              <p className="text-xs font-light pb-1">{holes[i].distance}</p>
+              <p className="py-2" style={{ backgroundColor: getScoreColorHex(score, holes[i]) }}>
+                {score.score}
+              </p>
+            </div>
+          ))}
         </PopoverPanel>
       </Transition>
     </Popover>
