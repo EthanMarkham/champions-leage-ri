@@ -134,6 +134,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file");
+    const redirect = formData.get("redirect");
 
     if (!file || !(file instanceof Blob)) {
       return NextResponse.json({ message: "File not found or invalid" }, { status: 400 });
@@ -155,7 +156,16 @@ export async function POST(req: NextRequest) {
     });
 
     if (processedOutput.errors.length === 0) {
-      return NextResponse.json({ message: "Got it!", ...processedOutput }, { status: 200 });
+      const responsePayload: any = {
+        message: "Got it!",
+        ...processedOutput,
+        redirectUrl: processedOutput.scoreSheetLink,
+      };
+      if (redirect === "true") {
+        return NextResponse.redirect(new URL(processedOutput.scoreSheetLink!, req.url));
+      } else {
+        return NextResponse.json(responsePayload, { status: 200 });
+      }
     }
     return NextResponse.json({ message: "Some issues occurred!", ...processedOutput }, { status: 422 });
   } catch (error) {
