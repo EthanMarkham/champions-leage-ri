@@ -22,8 +22,8 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/webp",
       },
     ],
-    theme_color: "#FFFFFF",
-    background_color: "#1F2937",
+    theme_color: "#1F2937", // Updated theme color
+    background_color: "#FFFFFF",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",
