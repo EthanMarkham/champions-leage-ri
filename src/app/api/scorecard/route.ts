@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (file.type !== "text/csv") {
-      return { error: "Only CSV files are allowed" };
+      return NextResponse.json({ message: "Only CSV files are allowed" }, { status: 400 });
     }
 
     const { scoreData, error: csvError } = await buildRoundData(file);
