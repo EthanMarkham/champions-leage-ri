@@ -1,8 +1,11 @@
+// src/app/layout.js
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { twMerge } from "tailwind-merge";
 import { NavBar } from "@/components/nav/NavBar";
+import { Suspense } from "react";
+import SpinnerPage from "./loading";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +26,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: APP_DEFAULT_TITLE,
-    // startUpImage: [],
   },
   formatDetection: {
     telephone: false,
@@ -66,7 +68,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <NavBar />
-        {children}
+        <Suspense fallback={<SpinnerPage />}>{children}</Suspense>
       </body>
     </html>
   );

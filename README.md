@@ -45,6 +45,7 @@ I am working on a web development project using Tailwind CSS and Next, specifica
 **Design Specifications:**
 
 
+
 1. **Colors:**
    * **Primary Color:** #1E3A8A (Blue)
    * **Secondary Color:** #1E40AF (Darker Blue)
@@ -78,6 +79,12 @@ I am working on a web development project using Tailwind CSS and Next, specifica
    * Add animation for smoother transitions and hover effects
    * Consider dark mode support with appropriate color adjustments
 
-   \
+
+
+## Submit Flow
+
+
+
+1. \
 
 
