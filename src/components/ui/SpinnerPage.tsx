@@ -12,7 +12,7 @@ const SpinnerPage = forwardRef<HTMLDivElement, SpinnerPageProps>(({ spinnerProps
         <div
           {...spinnerProps}
           className={twMerge(
-            "border-t-transparent border-solid animate-spin rounded-full border-slate-400 border-2 h-12 w-12",
+            "border-solid animate-spin rounded-full border-slate-400 border-t-transparent border-2 h-12 w-12",
             spinnerProps && spinnerProps.className
           )}
         ></div>

@@ -62,7 +62,7 @@ model ScoreSheetGroup {
   eventId         Int
   roundHash       String       @unique
   event           Event        @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  paymentsOveride Boolean      @default(false)
+  submitted       Boolean      @default(false)
   scoreSheets     ScoreSheet[]
   payments        Payment[]
 }
@@ -76,8 +76,6 @@ model ScoreSheet {
   playerName        String
   scores            Score[]
   createdAt         DateTime        @default(now())
-  payments          Payment[]
-  approved          Boolean         @default(false)
 }
 
 model Score {
@@ -94,8 +92,6 @@ model Payment {
   id                Int              @id @default(autoincrement())
   amount            Float
   createdAt         DateTime         @default(now())
-  scoreSheetId      Int
-  scoreSheet        ScoreSheet       @relation(fields: [scoreSheetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId            Int
   user              User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   scoreSheetGroupId Int?

@@ -39,8 +39,8 @@ const EventCard: React.FC<EventDetailsType> = (event) => {
           {isPast && (
             <>
               <EventDetail label="Total Rounds Played:" value={event.totalScoreSheets.toString()} />
-              <EventDetail label="Hot Round:" value={`${event.bestScore} by ${event.bestScoreUsername}`} />
-              <EventDetail label="Average Score:" value={event.averageScore ? event.averageScore.toString() : "---"} />
+              {event.bestScore && <EventDetail label="Hot Round:" value={`${event.bestScore} by ${event.bestScoreUsername}`} />}
+              {event.averageScore && <EventDetail label="Average Score:" value={event.averageScore  + ''} />}
             </>
           )}
         </div>

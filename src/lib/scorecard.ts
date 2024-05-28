@@ -196,6 +196,7 @@ export const getUserScoresByEventId = cache(async (id: number) => {
     where: {
       scoreSheetGroup: {
         eventId: id,
+        submitted: true,
       },
     },
   });
