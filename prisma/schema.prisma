@@ -77,6 +77,7 @@ model ScoreSheet {
   scores            Score[]
   createdAt         DateTime        @default(now())
   payments          Payment[]
+  approved          Boolean         @default(false)
 }
 
 model Score {
