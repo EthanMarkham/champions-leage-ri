@@ -28,11 +28,13 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ isOpen, closeModal, add
   const validateForm = () => {
     const newErrors: { name?: string; email?: string } = {};
     if (!name.trim()) newErrors.name = "Name is required";
+    /*
     if (!email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Email is invalid";
     }
+    */
     return newErrors;
   };
 
