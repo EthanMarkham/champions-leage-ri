@@ -28,19 +28,13 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     orientation: "portrait",
     share_target: {
-      action: "api/csv",
+      action: "api/scorecard",
       method: "post",
       enctype: "multipart/form-data",
-      params: [
+      files: [
         {
-          name: "url",
-          value: "url",
-          required: true,
-        },
-        {
-          name: "file",
-          value: "file",
-          required: true,
+          name: "scorecard",
+          accept: ["text/csv", ".csv"],
         },
       ],
     },
