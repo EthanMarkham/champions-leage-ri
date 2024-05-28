@@ -44,6 +44,7 @@ export default function ScoreCardUpload() {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("redirect", "false");
 
     try {
       const res = await fetch("/api/scorecard", {

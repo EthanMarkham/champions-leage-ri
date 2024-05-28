@@ -129,12 +129,12 @@ async function processAndSaveScores(scoreData: ScoreData, output: Output) {
 export async function POST(req: NextRequest) {
   try {
     if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
-      return NextResponse.json({ message: "Only multipart/form-data is supported" }, { status: 400 });
+      return NextResponse.json({ message: "Only multipart/form/data is supported" }, { status: 400 });
     }
 
     const formData = await req.formData();
     const file = formData.get("file");
-    const redirect = formData.get("redirect");
+    const redirect = formData.get("redirect") ?? "true"; // Default to "true"
 
     if (!file || !(file instanceof Blob)) {
       return NextResponse.json({ message: "File not found or invalid" }, { status: 400 });
