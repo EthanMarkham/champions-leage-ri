@@ -1,41 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { processScoreData, ScoreData } from "@/lib/scorecard";
 import { getDateFromUdiscTime } from "@/lib/date";
 import { parseCSV } from "@/lib/csv";
+import prisma from "@/lib/prisma";
+import { findEvent } from "@/lib/event";
+import { findMatchingUser } from "@/lib/users";
 
-// Validate form data
-async function parseFormData(
-  formData: FormData
-): Promise<{ file?: Blob; players?: { id: number; name: string }[]; error?: string }> {
-  const file = formData.get("file");
-  const playersParam = formData.get("players");
-
-  if (!file || !(file instanceof Blob)) {
-    return { error: "File not found or invalid" };
-  }
-
-  if (file.type !== "text/csv") {
-    return { error: "Only CSV files are allowed" };
-  }
-
-  if (!playersParam) {
-    return { error: "Players parameter is missing" };
-  }
-
-  const players = JSON.parse(playersParam.toString()) as { id: number; name: string }[];
-  if (!Array.isArray(players) || !players.every((player) => player.name && player.id)) {
-    return { error: "Players parameter invalid" };
-  }
-
-  return { file, players };
+interface ScoreResult {
+  PlayerName: string;
+  CourseName: string;
+  LayoutName: string;
+  StartDate: string;
+  EndDate: string;
+  Total: string;
+  "+/-": string;
+  RoundRating: string;
+  [key: string]: string; // Index signature to allow dynamic fields like Hole1, Hole2, etc.
 }
 
-// Build round data from CSV file and players
-async function buildRoundData(
-  file: Blob,
-  players: { id: number; name: string }[]
-): Promise<{ scoreData?: ScoreData; error?: string }> {
+interface ScoreData {
+  hash: string;
+  course: string;
+  layout: string;
+  time: Date;
+  results: ScoreResult[];
+}
+
+interface GeneralError {
+  message: string;
+  hash?: string;
+}
+
+interface Output {
+  scoreSheetGroupId: number | null;
+  errors: GeneralError[];
+  scoreSheetLink?: string;
+}
+
+// Function to build round data from CSV file and players
+async function buildRoundData(file: Blob) {
   try {
     const results = await parseCSV(file);
 
@@ -52,10 +55,8 @@ async function buildRoundData(
     }
 
     const hash = crypto.createHash("sha256").update(results.join("\n")).digest("hex");
-
     const scoreData: ScoreData = {
       hash,
-      users: players,
       course: firstRow["CourseName"],
       layout: firstRow["LayoutName"],
       time: new Date(getDateFromUdiscTime(firstRow["StartDate"])),
@@ -68,7 +69,63 @@ async function buildRoundData(
   }
 }
 
-// Handle POST request
+// Function to process and save scores to the database
+async function processAndSaveScores(scoreData: ScoreData, output: Output) {
+  const { hash, results, course, layout, time } = scoreData;
+
+  const { event, error: eventError } = await findEvent(time, course, layout);
+  if (!event || eventError) {
+    output.errors.push({ message: eventError });
+    return output;
+  }
+
+  const existingScoreSheetGroup = await prisma.scoreSheetGroup.findUnique({
+    where: { roundHash: hash },
+  });
+
+  // Info: Lie and just redirect them to the existing scoresheet group
+  if (existingScoreSheetGroup) {
+    output.scoreSheetGroupId = existingScoreSheetGroup.id;
+    output.scoreSheetLink = `/scores/${existingScoreSheetGroup.id}`;
+    return output;
+  }
+
+  const newScoreSheetGroup = await prisma.scoreSheetGroup.create({
+    data: {
+      roundHash: hash,
+      eventId: event.id,
+    },
+  });
+
+  output.scoreSheetGroupId = newScoreSheetGroup.id;
+  output.scoreSheetLink = `/scores/${newScoreSheetGroup.id}`;
+
+  for (const result of results) {
+    const { PlayerName, Total, ...holes } = result;
+
+    const scores = Object.entries(holes)
+      .filter(([key]) => key.startsWith("Hole"))
+      .map(([holeKey, score]) => ({
+        holeNumber: parseInt(holeKey.replace("Hole", ""), 10),
+        score: parseInt(score, 10),
+      }));
+
+    await prisma.scoreSheet.create({
+      data: {
+        scoreSheetGroupId: newScoreSheetGroup.id,
+        userId: null,
+        playerName: PlayerName,
+        scores: {
+          create: scores,
+        },
+      },
+    });
+  }
+
+  return output;
+}
+
+// POST request handler
 export async function POST(req: NextRequest) {
   try {
     if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
@@ -76,24 +133,31 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
-    const { file, players, error: validationError } = await parseFormData(formData);
+    const file = formData.get("file");
 
-    if (validationError) {
-      return NextResponse.json({ message: validationError }, { status: 400 });
+    if (!file || !(file instanceof Blob)) {
+      return NextResponse.json({ message: "File not found or invalid" }, { status: 400 });
     }
 
-    const { scoreData, error: csvError } = await buildRoundData(file!, players!);
+    if (file.type !== "text/csv") {
+      return { error: "Only CSV files are allowed" };
+    }
 
-    if (csvError) {
+    const { scoreData, error: csvError } = await buildRoundData(file);
+
+    if (csvError || !scoreData) {
       return NextResponse.json({ message: csvError }, { status: 400 });
     }
 
-    const output = await processScoreData(scoreData!);
+    const processedOutput = await processAndSaveScores(scoreData, {
+      scoreSheetGroupId: null,
+      errors: [],
+    });
 
-    if (output.errors.length === 0) {
-      return NextResponse.json({ message: "Got it!", ...output }, { status: 200 });
+    if (processedOutput.errors.length === 0) {
+      return NextResponse.json({ message: "Got it!", ...processedOutput }, { status: 200 });
     }
-    return NextResponse.json({ message: "Some issues occurred!", ...output }, { status: 422 });
+    return NextResponse.json({ message: "Some issues occurred!", ...processedOutput }, { status: 422 });
   } catch (error) {
     return NextResponse.json({ message: (error as Error).message }, { status: 500 });
   }

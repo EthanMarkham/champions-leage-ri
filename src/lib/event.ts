@@ -148,6 +148,9 @@ export async function getDetailedEventList() {
             },
           },
         },
+        where: {
+          submitted: true,
+        }
       },
       layout: {
         include: {

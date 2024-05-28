@@ -91,8 +91,8 @@ I am working on a web development project using Tailwind CSS and Next, specifica
 ## Submit Flow
 
 
-1.  ScoreCard uploaded and leaves userIds blank
-2.  ScoreCard \[ID\] dynamically renders the fields needed to complete the score card (payments, users)
-3.  
+1. ScoreCard uploaded and leaves userIds blank
+2. ScoreCard \[ID\] dynamically renders the fields needed to complete the score card (payments, users)
+3. \
 
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Card from "@/components/ui/Card";
 import SpinnerCover from "@/components/ui/SpinnerCover";
@@ -11,7 +11,6 @@ import { Fieldset, Field, Label, Description, Input, Button } from "@headlessui/
 import { twMerge } from "tailwind-merge";
 import { UserSearchModel } from "@/lib/users";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
-import PlayerCombobox from "@/components/scoreForm/PlayerCombobox";
 
 export default function ScoreCardUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -21,20 +20,6 @@ export default function ScoreCardUpload() {
   const [fileName, setFileName] = useState("No file chosen");
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if ("launchQueue" in window) {
-      (window.launchQueue as any).setConsumer((launchParams: { files: string | any[] }) => {
-        if (!launchParams.files.length) {
-          return;
-        }
-
-        const file = launchParams.files[0];
-        setFile(file);
-        setFileName(file.name);
-      });
-    }
-  }, []);
-
   const handleUpload = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -42,15 +27,6 @@ export default function ScoreCardUpload() {
     if (!file) {
       setMessage({
         message: "Please select a file to upload.",
-        type: "error",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    if (selectedPeople.length < 2) {
-      setMessage({
-        message: "Please add at least 2 players.",
         type: "error",
       });
       setIsLoading(false);
@@ -68,7 +44,6 @@ export default function ScoreCardUpload() {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("players", JSON.stringify(selectedPeople));
 
     try {
       const res = await fetch("/api/scorecard", {
@@ -111,10 +86,6 @@ export default function ScoreCardUpload() {
         <Header message={message} text="Submit your ScoreCard!" subText="Udisc &#x27A1; Round &#x27A1; Export CSV" />
 
         <Fieldset as="form" className="mt-2 space-y-8 relative overflow-visible w-full" onSubmit={handleUpload}>
-          <Field className="relative">
-            <Label className="block text-gray-700 mb-2">Add Players</Label>
-            <PlayerCombobox selectedPeople={selectedPeople} setSelectedPeople={setSelectedPeople} />
-          </Field>
           <Field className="w-full">
             <Label className="text-sm font-medium text-gray-700" htmlFor="file-upload">
               CSV Upload

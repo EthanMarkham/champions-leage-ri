@@ -1,8 +1,6 @@
 import EventCard from "@/components/events/EventCard";
 import PageWrapper from "@/components/ui/PageWrapper";
-import { dateToMonthYearDisplay } from "@/lib/date";
 import { getDetailedEventList } from "@/lib/event";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 
 export const revalidate = 3600; // revalidate the data at most every hour
 
