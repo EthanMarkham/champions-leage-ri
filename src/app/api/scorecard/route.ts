@@ -129,15 +129,15 @@ export async function POST(req: NextRequest) {
     }
 
     if (redirect === "true") {
-      const newUrl = new URL(processedOutput.scoreSheetLink, req.url);
-      console.log({redirectTo: newUrl.toString(), ...processedOutput})
-      return NextResponse.redirect(processedOutput.scoreSheetLink, 303); // Use 303 See Other for redirection with GET
+      const baseUrl = new URL(req.url);
+      const newUrl = new URL(processedOutput.scoreSheetLink, baseUrl.origin);
+      return NextResponse.redirect(newUrl.toString(), 303); // Use 303 See Other for redirection with GET
     }
 
     return NextResponse.json({
       message: "Got it!",
       ...processedOutput,
-      redirectUrl: processedOutput.scoreSheetLink,
+      redirectUrl: new URL(processedOutput.scoreSheetLink, new URL(req.url).origin).toString(),
     }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: (error as Error).message }, { status: 500 });
