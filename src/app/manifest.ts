@@ -33,7 +33,7 @@ export default function manifest(): MetadataRoute.Manifest {
       enctype: "multipart/form-data",
       files: [
         {
-          name: "scorecard",
+          name: "file",
           accept: [".csv", "text/csv", "text/plain"],
         },
       ],
