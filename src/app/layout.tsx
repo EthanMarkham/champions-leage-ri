@@ -6,7 +6,6 @@ import { twMerge } from "tailwind-merge";
 import { Suspense } from "react";
 import SpinnerPage from "./loading";
 import { NavBar } from "@/components/nav/NavBar";
-import { ServiceWorkerRegister } from "@/components/other/servicewWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -68,7 +67,6 @@ export default function RootLayout({
         )}
         suppressHydrationWarning={true}
       >
-        <ServiceWorkerRegister/>
         <NavBar />
         <Suspense fallback={<SpinnerPage />}>{children}</Suspense>
       </body>
