@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "File not found or invalid" }, { status: 400 });
     }
 
-    if (file.type !== "text/csv" && file.type !== "text/comma-seperated-values") {
+    if (file.type !== "text/csv" && file.type !== "text/comma-separated-values") {
       return NextResponse.json({ message: "Only CSV files are allowed", uploadedType: file.type }, { status: 400 });
     }
 
