@@ -53,6 +53,7 @@ I am working on a web development project using Tailwind CSS and Next, specifica
 
 
 
+
 1. **Colors:**
    * **Primary Color:** #1E3A8A (Blue)
    * **Secondary Color:** #1E40AF (Darker Blue)
@@ -91,8 +92,13 @@ I am working on a web development project using Tailwind CSS and Next, specifica
 ## Submit Flow
 
 
+
 1. ScoreCard uploaded and leaves userIds blank
 2. ScoreCard \[ID\] dynamically renders the fields needed to complete the score card (payments, users)
 3. \
 
 
+
+## Notes
+
+<https://serwist.pages.dev/docs/next/worker-exports>
