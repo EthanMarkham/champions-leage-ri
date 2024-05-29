@@ -6,7 +6,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import MobileMenu from "@/components/nav/MobileMenu";
 import DesktopLinks from "@/components/nav/DesktopLinks";
 import LogoAlt from "@/components/svg/Logo";
-
+import Image from "next/image";
 export interface NavigationItem {
   name: string;
   href: string;
@@ -46,7 +46,8 @@ export const NavBar: React.FC = () => {
                     <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                   )}
                 </MenuButton>
-                <LogoAlt className="w-16 grow-0" fill="white" />
+                <Image src="/icons/logo.webp" alt="CLRI" width={50} height={50}/>
+                {/* <LogoAlt className="w-16 grow-0" fill="white" /> */}
               </div>
               <DesktopLinks links={links} />
             </div>
