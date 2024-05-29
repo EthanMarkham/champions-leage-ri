@@ -130,8 +130,8 @@ export async function POST(req: NextRequest) {
 
     if (redirect === "true") {
       const newUrl = new URL(processedOutput.scoreSheetLink, req.url);
-      console.log({redirectTo: newUrl.toString()})
-      return NextResponse.redirect(new URL(processedOutput.scoreSheetLink, req.url));
+      console.log({redirectTo: newUrl.toString(), ...processedOutput})
+      return NextResponse.redirect(processedOutput.scoreSheetLink, 303); // Use 303 See Other for redirection with GET
     }
 
     return NextResponse.json({
