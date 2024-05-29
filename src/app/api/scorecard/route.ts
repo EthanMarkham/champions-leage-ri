@@ -4,7 +4,6 @@ import { getDateFromUdiscTime } from "@/lib/date";
 import { parseCSV } from "@/lib/csv";
 import prisma from "@/lib/prisma";
 import { findEvent } from "@/lib/event";
-import { findMatchingUser } from "@/lib/users";
 
 interface ScoreResult {
   PlayerName: string;
@@ -26,35 +25,23 @@ interface ScoreData {
   results: ScoreResult[];
 }
 
-interface GeneralError {
-  message: string;
-  hash?: string;
-}
+type ErrorResponse = { error: string };
+type SuccessResponse = { scoreSheetGroupId: number; scoreSheetLink: string };
+type ProcessScoreResult = SuccessResponse | ErrorResponse;
 
-interface Output {
-  scoreSheetGroupId: number | null;
-  errors: GeneralError[];
-  scoreSheetLink?: string;
-}
-
-// Function to build round data from CSV file and players
-async function buildRoundData(file: Blob) {
+async function buildRoundData(file: Blob): Promise<{ scoreData?: ScoreData; error?: string }> {
   try {
     const results = await parseCSV(file);
-
-    if (results.length === 0) {
-      return { error: "CSV file is empty" };
-    }
+    if (results.length === 0) return { error: "CSV file is empty" };
 
     const firstRow = results[0];
     const expectedKeys = ["PlayerName", "CourseName", "LayoutName", "StartDate", "EndDate", "Total"];
     for (const key of expectedKeys) {
-      if (!firstRow.hasOwnProperty(key)) {
-        return { error: "Unable to parse CSV" };
-      }
+      if (!firstRow.hasOwnProperty(key)) return { error: "Unable to parse CSV" };
     }
 
-    const hash = crypto.createHash("sha256").update(results.join("\n")).digest("hex");
+    const dataString = results.map(row => JSON.stringify(row)).join("|");
+    const hash = crypto.createHash("sha256").update(dataString).digest("hex");
     const scoreData: ScoreData = {
       hash,
       course: firstRow["CourseName"],
@@ -64,45 +51,34 @@ async function buildRoundData(file: Blob) {
     };
 
     return { scoreData };
-  } catch (error) {
+  } catch {
     return { error: "Error processing the CSV file" };
   }
 }
 
-// Function to process and save scores to the database
-async function processAndSaveScores(scoreData: ScoreData, output: Output) {
+async function processAndSaveScores(scoreData: ScoreData): Promise<ProcessScoreResult> {
   const { hash, results, course, layout, time } = scoreData;
-
   const { event, error: eventError } = await findEvent(time, course, layout);
-  if (!event || eventError) {
-    output.errors.push({ message: eventError });
-    return output;
-  }
+
+  if (!event || eventError) return { error: eventError };
 
   const existingScoreSheetGroup = await prisma.scoreSheetGroup.findUnique({
     where: { roundHash: hash },
   });
 
-  // Info: Lie and just redirect them to the existing scoresheet group
   if (existingScoreSheetGroup) {
-    output.scoreSheetGroupId = existingScoreSheetGroup.id;
-    output.scoreSheetLink = `/scores/${existingScoreSheetGroup.id}`;
-    return output;
+    return {
+      scoreSheetGroupId: existingScoreSheetGroup.id,
+      scoreSheetLink: `/scores/${existingScoreSheetGroup.id}`,
+    };
   }
 
   const newScoreSheetGroup = await prisma.scoreSheetGroup.create({
-    data: {
-      roundHash: hash,
-      eventId: event.id,
-    },
+    data: { roundHash: hash, eventId: event.id },
   });
-
-  output.scoreSheetGroupId = newScoreSheetGroup.id;
-  output.scoreSheetLink = `/scores/${newScoreSheetGroup.id}`;
 
   for (const result of results) {
     const { PlayerName, Total, ...holes } = result;
-
     const scores = Object.entries(holes)
       .filter(([key]) => key.startsWith("Hole"))
       .map(([holeKey, score]) => ({
@@ -115,17 +91,17 @@ async function processAndSaveScores(scoreData: ScoreData, output: Output) {
         scoreSheetGroupId: newScoreSheetGroup.id,
         userId: null,
         playerName: PlayerName,
-        scores: {
-          create: scores,
-        },
+        scores: { create: scores },
       },
     });
   }
 
-  return output;
+  return {
+    scoreSheetGroupId: newScoreSheetGroup.id,
+    scoreSheetLink: `/scores/${newScoreSheetGroup.id}`,
+  };
 }
 
-// POST request handler
 export async function POST(req: NextRequest) {
   try {
     if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
@@ -134,7 +110,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file");
-    const redirect = formData.get("redirect") ?? "true"; // Default to "true"
+    const redirect = formData.get("redirect") ?? "true";
 
     if (!file || !(file instanceof Blob)) {
       return NextResponse.json({ message: "File not found or invalid" }, { status: 400 });
@@ -145,29 +121,22 @@ export async function POST(req: NextRequest) {
     }
 
     const { scoreData, error: csvError } = await buildRoundData(file);
+    if (csvError || !scoreData) return NextResponse.json({ message: csvError }, { status: 400 });
 
-    if (csvError || !scoreData) {
-      return NextResponse.json({ message: csvError }, { status: 400 });
+    const processedOutput = await processAndSaveScores(scoreData);
+    if ("error" in processedOutput) {
+      return NextResponse.json({ message: processedOutput.error }, { status: 400 });
     }
 
-    const processedOutput = await processAndSaveScores(scoreData, {
-      scoreSheetGroupId: null,
-      errors: [],
-    });
-
-    if (processedOutput.errors.length === 0) {
-      const responsePayload: any = {
-        message: "Got it!",
-        ...processedOutput,
-        redirectUrl: processedOutput.scoreSheetLink,
-      };
-      if (redirect === "true") {
-        return NextResponse.redirect(new URL(processedOutput.scoreSheetLink!, req.url));
-      } else {
-        return NextResponse.json(responsePayload, { status: 200 });
-      }
+    if (redirect === "true") {
+      return NextResponse.redirect(new URL(processedOutput.scoreSheetLink, req.url));
     }
-    return NextResponse.json({ message: "Some issues occurred!", ...processedOutput }, { status: 422 });
+
+    return NextResponse.json({
+      message: "Got it!",
+      ...processedOutput,
+      redirectUrl: processedOutput.scoreSheetLink,
+    }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: (error as Error).message }, { status: 500 });
   }
