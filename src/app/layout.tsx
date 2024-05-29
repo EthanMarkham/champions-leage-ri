@@ -3,9 +3,10 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { twMerge } from "tailwind-merge";
-import { NavBar } from "@/components/nav/NavBar";
 import { Suspense } from "react";
 import SpinnerPage from "./loading";
+import { NavBar } from "@/components/nav/NavBar";
+import { ServiceWorkerRegister } from "@/components/other/servicewWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -67,6 +68,7 @@ export default function RootLayout({
         )}
         suppressHydrationWarning={true}
       >
+        <ServiceWorkerRegister/>
         <NavBar />
         <Suspense fallback={<SpinnerPage />}>{children}</Suspense>
       </body>

@@ -2,7 +2,6 @@ import { Button } from "@headlessui/react";
 import Link from "next/link";
 import Image from "next/image";
 import PageWrapper from "@/components/ui/PageWrapper";
-import Logo from "@/components/svg/Logo";
 
 export default function Home() {
   return (
