@@ -30,7 +30,7 @@ const ScoreTable = ({ scoreSheets, holes, showName = true, showPos = true }: Sco
                 <span className="block text-xs font-light">{hole.distance}</span>
               </th>
             ))}
-            <th className="p-3 border border-gray-700">ALL</th>
+            <th className="p-3 border border-gray-700">Total</th>
           </tr>
         </thead>
         <tbody>
