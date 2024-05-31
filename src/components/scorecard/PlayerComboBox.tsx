@@ -1,4 +1,3 @@
-// components/PlayerCombobox.tsx
 "use client";
 
 import {
@@ -9,13 +8,12 @@ import {
   ComboboxOptions,
   Transition,
 } from "@headlessui/react";
-import { ChevronDownIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { twMerge } from "tailwind-merge";
-import { useCallback, useState, useEffect, Fragment } from "react";
+import { ChevronDownIcon, PlusIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { useState, Fragment } from "react";
 import { getUsers, UserSearchModel } from "@/lib/users";
-import { debounce } from "@/lib/util";
 import AddPlayerModal from "../modals/AddPlayerModal";
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { twMerge } from "tailwind-merge";
+import { useDebouncedEffect } from "@/hooks/useDebouncedEffect"; // Adjust the import path according to your project structure
 
 interface PlayerComboboxProps {
   selected?: UserSearchModel | null;
@@ -23,44 +21,40 @@ interface PlayerComboboxProps {
 }
 
 const searchFunction = async (name?: string): Promise<UserSearchModel[]> => {
-  return await getUsers({ name, limit: 10, orderByField: "name" });
+  try {
+    return await getUsers({ name, limit: 10, orderByField: "name" });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
 };
 
-const PlayerCombobox: React.FC<PlayerComboboxProps> = (props) => {
-  const [selected, setSelected] = useState(props.selected);
+const PlayerCombobox: React.FC<PlayerComboboxProps> = ({ selected, setSelected }) => {
   const [query, setQuery] = useState("");
   const [players, setPlayers] = useState<UserSearchModel[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const fetchItems = async (query: string) => {
-    try {
-      const result = await searchFunction(query);
-      setPlayers(result);
-    } catch (error) {
-      console.error("Error fetching items:", error);
-    }
-  };
+  useDebouncedEffect(
+    () => {
+      const fetchPlayers = async () => {
+        const result = await searchFunction(query);
+        setPlayers(result);
+      };
+      fetchPlayers();
+    },
+    [query],
+    300
+  );
 
-  const debouncedFetchItems = useCallback(debounce(fetchItems, 100), []);
-
-  useEffect(() => {
-    debouncedFetchItems(query);
-  }, [query, debouncedFetchItems]);
-
-  const addPlayer = (player: UserSearchModel) => {
-    setSelected(player);
-  };
-
-  const onSelect = (value: UserSearchModel | null) => {
+  const handleSelect = (value: UserSearchModel | null) => {
     setQuery(value?.name || "");
     setSelected(value);
-    props.setSelected(value);
   };
 
   return (
     <>
       <div className="flex items-center space-x-4">
-        <Combobox value={selected} onChange={onSelect} virtual={{ options: players }}>
+        <Combobox value={selected} onChange={handleSelect}>
           <div className="relative w-full">
             <div className="relative w-full cursor-default overflow-hidden rounded-lg border border-gray-300 bg-white text-left shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm">
               <ComboboxInput
@@ -87,21 +81,18 @@ const PlayerCombobox: React.FC<PlayerComboboxProps> = (props) => {
                     key={player.id}
                     value={player}
                     className={({ active }) =>
-                      `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-indigo-600 text-white' : 'text-gray-900'}`
+                      `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                        active ? "bg-indigo-600 text-white" : "text-gray-900"
+                      }`
                     }
                   >
-                    {({ selected, active }) => (
+                    {({ selected }) => (
                       <>
-                        <span className={`block truncate ${selected ? 'font-semibold' : 'font-normal'}`}>
+                        <span className={`block truncate ${selected ? "font-semibold" : "font-normal"}`}>
                           {player.name}
                         </span>
                         {selected && (
-                          <span
-                            className={twMerge(
-                              "check absolute inset-y-0 left-0 flex items-center pl-3",
-                              active ? "text-white" : "text-indigo-600"
-                            )}
-                          >
+                          <span className={"absolute inset-y-0 left-0 flex items-center pl-3"}>
                             <CheckCircleIcon className="h-5 w-5" aria-hidden="true" />
                           </span>
                         )}
@@ -122,7 +113,7 @@ const PlayerCombobox: React.FC<PlayerComboboxProps> = (props) => {
           <span className="sr-only">Add Player</span>
         </button>
       </div>
-      <AddPlayerModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} addPlayer={addPlayer} />
+      <AddPlayerModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} addPlayer={setSelected} />
     </>
   );
 };
