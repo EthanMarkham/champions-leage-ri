@@ -1,21 +1,53 @@
-import { Score, Hole } from "@prisma/client";
+export function getScoreColor(score: number, par: number): string {
+  if (score === 1) {
+    return "var(--color-ace)";
+  }
 
-export function getScoreColorClass(score: Score, hole: Hole) {
-  if (score.score < hole.par) {
-    return "text-green-500";
-  } else if (score.score > hole.par) {
-    return "text-red-500";
-  } else {
-    return "text-gray-300";
+  const diff = score - par;
+
+  if (diff === 0) {
+    return "current";
+  }
+
+  if (diff > 0) {
+    const bogeyDiff = Math.min(diff, 4);
+    return `var(--color-bogey${bogeyDiff})`;
+  }
+
+  switch (diff) {
+    case -1:
+      return "var(--color-birdie)";
+    case -2:
+      return "var(--color-eagle)";
+    case -3:
+      return "var(--color-albatross)";
+    case -4:
+      return "var(--color-condor)";
+    default:
+      return "current";
   }
 }
 
-export function getScoreColorHex(score: Score, hole: Hole) {
-  if (score.score < hole.par) {
-    return "#22c55e";
-  } else if (score.score > hole.par) {
-    return "#dc2626";
-  } else {
-    return "transparent";
+export function getRelativeScoreColor(score: number): string {
+  if (score === 0) {
+    return "2D3748";
+  }
+
+  if (score > 0) {
+    const bogeyDiff = Math.min(score, 4);
+    return `var(--color-bogey${bogeyDiff})`;
+  }
+
+  switch (score) {
+    case -1:
+      return "var(--color-birdie)";
+    case -2:
+      return "var(--color-eagle)";
+    case -3:
+      return "var(--color-albatross)";
+    case -4:
+      return "var(--color-condor)";
+    default:
+      return "current";
   }
 }

@@ -1,55 +1,47 @@
-import { getTotalPar } from "@/lib/holes";
-import { getScoreColorClass } from "@/lib/score";
-import { getScoreSheetDetails, getTotalStrokes } from "@/lib/scorecard";
-import { Hole } from "@prisma/client";
+import { getScoreColor } from "@/lib/score";
+import { getScoreSheetDetails } from "@/lib/scorecard";
+import { Hole, Score, ScoreSheet, ScoreSheetGroup } from "@prisma/client";
+import React from "react";
 
-type ScoreSheetGroup = Awaited<ReturnType<typeof getScoreSheetDetails>>;
+type GroupDetails = Exclude<Awaited<ReturnType<typeof getScoreSheetDetails>>, null>;
 
 interface ScoreTableProps {
-  scoreSheets: Exclude<ScoreSheetGroup, null>["scoreSheets"];
-  courseName?: string;
-  layoutName?: string;
-  showName?: boolean;
-  showPos?: boolean;
   holes: Hole[];
+  scoreSheetGroup: GroupDetails;
+  totalScore: number;
 }
 
-const ScoreTable = ({ scoreSheets, holes, showName = true, showPos = true }: ScoreTableProps) => {
-  const totalScore = getTotalPar(holes);
+const ScoreTable: React.FC<ScoreTableProps> = ({ holes, scoreSheetGroup, totalScore }) => {
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full table-auto border-collapse">
+      <table className="table table-sm table-pin-rows table-pin-cols bg-base-300 border-base-100 shadow-lg">
         <thead>
-          <tr className="bg-gray-800 text-white">
-            {showPos && <th className="p-3 border border-gray-700">POS</th>}
-            {showName && <th className="p-3 border border-gray-700">NAME</th>}
-            <th className="p-3 border border-gray-700">SCORE</th>
-            {holes.map((hole, i) => (
-              <th key={i + 1} className="p-3 border border-gray-700">
-                <span className="block">{i + 1}</span>
-                <span className="block text-xs font-light">{hole.distance}</span>
-              </th>
+          <tr>
+            <th>Hole</th>
+            {holes.map(({ hole, id }) => (
+              <td key={id} className="text-center">
+                {hole}
+              </td>
             ))}
-            <th className="p-3 border border-gray-700">Total</th>
+            <td>Total</td>
           </tr>
         </thead>
         <tbody>
-          {scoreSheets?.map(({ playerName, id, scores }, index) => (
-            <tr key={id} className={index % 2 === 0 ? "bg-gray-700 text-white" : "bg-gray-600 text-white"}>
-              {showPos && <td className="p-3 border border-gray-700">{index + 1}</td>}
-              {showName && <td className="p-3 border border-gray-700">{playerName}</td>}
-              <td className="p-3 border border-gray-700">{getTotalStrokes(scores) - totalScore}</td>
-              {scores.map((score, holeIndex) => (
+          {scoreSheetGroup.scoreSheets.map(({ playerName, scores, total, id }: any) => (
+            <tr key={id}>
+              <th>{playerName}</th>
+              {scores.map((score: any, i: number) => (
                 <td
-                  key={holeIndex}
-                  className={`p-3 border border-gray-700 ${getScoreColorClass(score, holes[holeIndex])}`}
+                  className="text-center"
+                  style={{ backgroundColor: getScoreColor(score.score, holes[i].par) }}
+                  key={score.id}
                 >
-                  <div className="w-full flex items-center justify-center">
-                    {score.score}
-                  </div>
+                  {score.score}
                 </td>
               ))}
-              <td className="p-3 border border-gray-700">{getTotalStrokes(scores)}</td>
+              <td>
+                {total}&nbsp;({total - totalScore})
+              </td>
             </tr>
           ))}
         </tbody>

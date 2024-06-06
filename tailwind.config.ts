@@ -6,15 +6,34 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  theme: {
-    extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+  daisyui: {
+    themes: [
+      "dark",
+      "light",
+      "cupcake",
+      {
+        mytheme: {
+          primary: "#0d7377",
+          secondary: "#14ffec",
+          accent: "#323232",
+          neutral: "#1f1f1f",
+          "base-100": "#181818",
+          info: "#0d7377",
+          success: "#21bf73",
+          warning: "#ffa41b",
+          error: "#ff4f5a",
+          "--rounded-box": "1rem",
+          "--rounded-btn": "0.5rem",
+          "--rounded-badge": "1.9rem",
+          "--animation-btn": "0.25s",
+          "--animation-input": "0.25s",
+          "--btn-text-case": "uppercase",
+          "--navbar-padding": "1rem",
+          "--border-btn": "1px",
+        },
       },
-    },
+    ],
   },
-  plugins: [],
+  plugins: [require("daisyui"), require("@tailwindcss/typography")],
 };
 export default config;

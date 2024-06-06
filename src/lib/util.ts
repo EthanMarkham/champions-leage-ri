@@ -1,11 +1,3 @@
-export const debounce = (func: (...args: any[]) => void, wait: number) => {
-  let timeout: NodeJS.Timeout;
-  return (...args: any[]) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-};
-
 export const getCurrencyFormatter = () => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",

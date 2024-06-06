@@ -60,15 +60,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={twMerge(
-          inter.className,
-          "bg-gray-300/80 bg-cover bg-center h-screen relative flex flex-col max-h-screen overflow-hidden"
-        )}
-        suppressHydrationWarning={true}
-      >
+      <body className={twMerge(inter.className, "base-100")} suppressHydrationWarning={true}>
         <NavBar />
-        <Suspense fallback={<SpinnerPage />}>{children}</Suspense>
+        <main
+          className={twMerge(
+            "pt-16 bg-base-100 flex flex-col",
+            "w-full h-full min-h-screen max-h-screen overflow-auto",
+            "[&>div]:p-2 [&>div]:lg:p-4 [&>*]:grow"
+          )}
+          data-theme="dark"
+        >
+          <Suspense fallback={<SpinnerPage />}>{children}</Suspense>
+        </main>
       </body>
     </html>
   );

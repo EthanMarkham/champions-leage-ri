@@ -34,9 +34,9 @@ export function dateToMonthYearDisplay(targetDate: Date) {
 
 function toEST(date: Date): Date {
   // Convert date to 'America/New_York' timezone and return a new Date object
-  const options = { timeZone: 'America/New_York', hour12: false };
-  const estString = new Intl.DateTimeFormat('en-US', options).format(date);
-  const [month, day, year] = estString.split('/').map(Number);
+  const options = { timeZone: "America/New_York", hour12: false };
+  const estString = new Intl.DateTimeFormat("en-US", options).format(date);
+  const [month, day, year] = estString.split("/").map(Number);
   return new Date(year, month - 1, day);
 }
 
@@ -50,7 +50,7 @@ export function dateStarted(targetDate: Date): boolean {
   const currentYear = estCurrentDate.getFullYear();
   const currentMonth = estCurrentDate.getMonth(); // Months are 0-based in JavaScript
   const targetYear = estTargetDate.getFullYear();
-  const targetMonth = estTargetDate.getMonth() + 1; // Months are 0-based in JavaScript
+  const targetMonth = estTargetDate.getMonth(); // Keep months 0-based
 
   return currentYear < targetYear || (currentYear === targetYear && currentMonth >= targetMonth);
 }

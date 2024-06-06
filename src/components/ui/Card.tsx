@@ -1,19 +1,18 @@
+import React from "react";
 import { twMerge } from "tailwind-merge";
-import { HTMLAttributes, ReactNode } from "react";
 
-interface CardProps {
-  children: ReactNode;
+interface CardProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+  title?: string;
 }
 
-const Card = (props: HTMLAttributes<HTMLDivElement>) => {
+const Card: React.FC<CardProps> = ({ title, className, children, ...props }) => {
   return (
-    <div
-      {...props}
-      className={twMerge(
-        "border border-gray-300 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 items-center text-gray-800 bg-gray-100 p-2 md:p4 overflow-hidden",
-        props.className
-      )}
-    />
+    <div className={twMerge("card card-bordered bg-base-200", className)} {...props}>
+      <div className="card-body">
+        {title && <h2 className="card-title">{title}</h2>}
+        {children}
+      </div>
+    </div>
   );
 };
 

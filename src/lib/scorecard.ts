@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Score, ScoreSheet, User } from "@prisma/client";
 import { cache } from "react";
-import { add, multiply, subtract } from 'mathjs';
+import { add, multiply, subtract } from "mathjs";
 
 interface UserScores {
   user: User;
@@ -9,7 +9,7 @@ interface UserScores {
 }
 
 export const getScoreSheetDetails = cache(async (id: number) => {
-  return await prisma.scoreSheetGroup.findUnique({
+  const scoreSheetGroup = await prisma.scoreSheetGroup.findUnique({
     where: { id },
     include: {
       event: {
@@ -34,9 +34,18 @@ export const getScoreSheetDetails = cache(async (id: number) => {
       payments: true,
     },
   });
+
+  if (!scoreSheetGroup) {
+    return null;
+  }
+
+  scoreSheetGroup.scoreSheets =
+    scoreSheetGroup.scoreSheets.map((s) => ({ ...s, total: getTotalStrokes(s.scores) })) || [];
+
+  return scoreSheetGroup;
 });
 
-export function getTotalStrokes(scrores: Score[]) {
+export function getTotalStrokes(scrores: { score: number }[]) {
   return scrores.reduce((prev, cur) => prev + cur.score, 0);
 }
 

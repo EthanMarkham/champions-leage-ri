@@ -1,11 +1,6 @@
-"use client";
-
-import { Menu, MenuButton } from "@headlessui/react";
-import { usePathname } from "next/navigation";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import MobileMenu from "@/components/nav/MobileMenu";
-import DesktopLinks from "@/components/nav/DesktopLinks";
+import { Bars3Icon } from "@heroicons/react/24/outline";
 import LogoAlt from "@/components/svg/Logo";
+import Link from "next/link";
 export interface NavigationItem {
   name: string;
   href: string;
@@ -19,40 +14,27 @@ const navigation: NavigationItem[] = [
   { name: "Submit Round", href: "/scores/upload" },
 ];
 
-const mapLinksToCurrent = (currentPath: string, items: NavigationItem[]) => {
-  const pathStart = currentPath.slice(1).split("/")[0];
-  return items.map((item) => ({
-    ...item,
-    current: pathStart === item.href.slice(1).split("/")[0],
-  }));
-};
-
 export const NavBar: React.FC = () => {
-  const pathName = usePathname();
-  const links = mapLinksToCurrent(pathName, navigation);
   return (
-    <Menu as="nav" className="bg-gray-800 text-white shadow-lg">
-      {({ open, close }) => (
-        <>
-          <div className="w-full px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between md:justify-start h-16 items-center">
-              <div className="flex items-center relative justify-between w-full md:w-fit h-16 overflow-hidden">
-                <MenuButton className="relative inline-flex md:hidden items-center justify-center rounded-md p-2 text-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                  <span className="sr-only">Open main menu</span>
-                  {open ? (
-                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                  )}
-                </MenuButton>
-                <LogoAlt className="w-16 grow-0" fill="white" />
-              </div>
-              <DesktopLinks links={links} />
-            </div>
+    <div className="navbar bg-neutral text-white z-50 fixed top-0 left-0 right-0">
+      <div className="navbar-start">
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+            <Bars3Icon className="h-5 w-5" fill="none" />
           </div>
-          <MobileMenu links={links} closeMenu={close} />
-        </>
-      )}
-    </Menu>
+          <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-neutral rounded-box w-52">
+            {navigation.map((item, i) => (
+              <li key={i}>
+                <Link href={item.href}>{item.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className="navbar-center">
+        <a className="btn btn-ghost text-xl">ChampionsLeagueRI</a>
+      </div>
+      <div className="navbar-end"></div>
+    </div>
   );
 };

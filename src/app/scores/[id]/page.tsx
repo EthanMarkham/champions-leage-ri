@@ -1,18 +1,18 @@
-// src/app/scorecard/[id]/page.tsx
-import ScoreSheetBuilder from "@/components/scorecard/ScoreSheetBuilder";
+import { UserScoreCardManagement } from "@/components/modals";
+import ScoreCardPlayerBox from "@/components/scorecard/ScoreCardPlayerBox";
+import ScoreSpread from "@/components/scorecard/ScoreSpread";
 import ScoreTable from "@/components/scorecard/ScoreTable";
-import Badge from "@/components/ui/Badge";
-import PageWrapper from "@/components/ui/PageWrapper";
+import { getTotalPar } from "@/lib/holes";
 import { getScoreSheetAmountOwed, getScoreSheetDetails } from "@/lib/scorecard";
 import { getCurrencyFormatter } from "@/lib/util";
-import { Field, Fieldset, Input, Label } from "@headlessui/react";
+import React from "react";
 
 interface Params {
   id: string;
 }
 
 function parseAndValidateId(id: string | string[] | undefined): number | null {
-  if (id === undefined || Array.isArray(id)) {
+  if (!id || Array.isArray(id)) {
     console.error("ID should be a single string, received:", id);
     return null;
   }
@@ -35,46 +35,72 @@ async function fetchScoreSheetGroup(id: string) {
   return scoreSheetGroup;
 }
 
-export const revalidate = 3600; // revalidate the data at most every hour
+//export const revalidate = 3600; // revalidate the data at most every hour
 
 export default async function ScoreCardPage({ params }: { params: Params }) {
   const scoreSheetGroup = await fetchScoreSheetGroup(params.id);
-  if (!scoreSheetGroup) {
-    return <div>Oops! Score sheet not found...</div>;
+  const holes = scoreSheetGroup?.event.layout.holes;
+
+  if (!scoreSheetGroup || !holes) {
+    return <div className="alert alert-error">Oops! Score sheet not found...</div>;
   }
 
   const amountDue = getScoreSheetAmountOwed(scoreSheetGroup);
   const currencyFormatter = getCurrencyFormatter();
 
   return (
-    <PageWrapper className="space-y-4">
-      <div className="flex justify-start gap-2">
-        <Badge className="text-lg" color="blue" label="Status:">
-          {scoreSheetGroup.submitted ? "Submitted" : "Pending"}
-        </Badge>
+    <section className="flex flex-col space-y-6 p-6 !pt-10 w-full max-w-[1000px] mx-auto">
+      <form className="flex gap-4 lg:gap-10 flex-wrap">
+        {scoreSheetGroup.scoreSheets.map((scoreSheet) => (
+          <ScoreCardPlayerBox key={scoreSheet.id} scoreSheet={scoreSheet} />
+        ))}
 
-        {amountDue > 0 && (
-          <Badge className="text-lg" color="red" label="Amount Due:">
-            {currencyFormatter.format(amountDue)}
-          </Badge>
-        )}
+        <div className="flex gap-8 justify-around md:justify-end grow">
+          {amountDue > 0 && (
+            <div className="indicator -translate-y-4">
+              <div className="stat text-xs w-fit h-fit">
+                <span className="indicator-item indicator-bottom indicator-center">
+                  <button className="btn btn-success btn-xs p-1 h-fit">Add Funds</button>
+                </span>
+                <div className="stat-desc">Amount Due</div>
+                <div className="stat-value">{currencyFormatter.format(amountDue)}</div>
+              </div>
+            </div>
+          )}
+
+          {!scoreSheetGroup.submitted && (
+            <div className="flex justify-around items-center">
+              <button className="btn btn-secondary">
+                Submit<span className="hidden lg:inline">&nbsp;Round</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </form>
+
+      <div className="divider"></div>
+
+      <div className="base-300">
+        <div className="text-xl font-medium my-2">Scores</div>
+        <ScoreTable holes={holes} scoreSheetGroup={scoreSheetGroup} totalScore={getTotalPar(holes)} />
       </div>
 
-      {scoreSheetGroup.submitted && (
-        <ScoreTable
-          showPos={false}
-          scoreSheets={scoreSheetGroup.scoreSheets}
-          courseName={scoreSheetGroup.event.layout.course.name}
-          layoutName={scoreSheetGroup.event.layout.name}
-          holes={scoreSheetGroup.event.layout.holes}
-        />
-      )}
+      <div className="divider"></div>
 
-      {!scoreSheetGroup.submitted && (
-        <ScoreSheetBuilder scoreSheets={scoreSheetGroup.scoreSheets} holes={scoreSheetGroup.event.layout.holes} />
-      )}
+      <div className="base-300">
+        <div className="text-xl font-medium my-2">Spread It</div>
+        {scoreSheetGroup.scoreSheets.map((scoreSheet) => (
+          <div key={scoreSheet.id}>
+            <span className="label p-0">{scoreSheet.playerName}</span>
+            <ScoreSpread
+              key={scoreSheet.id + "_spread"}
+              scores={scoreSheet.scores.map(({ score }, i) => score - holes[i].par)}
+            />
+          </div>
+        ))}
+      </div>
 
-      {/* Render event, scoreSheets, and payments as needed */}
-    </PageWrapper>
+      <UserScoreCardManagement />
+    </section>
   );
 }

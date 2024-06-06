@@ -3,8 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --text-color: #333;
-  --background-color: #fff;
+  --color-ace: #2DAE86;
+  --color-condor: #81AEE6;
+  --color-albatross: #7099CC;
+  --color-eagle: #557FB5;
+  --color-birdie: #008e6f;
+  --color-bogey1: #C4876A;
+  --color-bogey2: #C86B42;
+  --color-bogey3: #B14D22;
+  --color-bogey4: #9A2F02;
 }
 
 body {
