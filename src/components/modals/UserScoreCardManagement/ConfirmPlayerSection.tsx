@@ -4,8 +4,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { useSpring, animated } from "@react-spring/web";
 import { twMerge } from "tailwind-merge";
-
-var debounce = require("lodash.debounce");
+import debounce from "lodash.debounce";
 
 interface User {
   id: number;
@@ -48,7 +47,10 @@ const ConfirmPlayerSection: React.FC<ConfirmPlayerSectionProps> = () => {
     }
   };
 
-  const debouncedFetchUsers = useCallback(debounce(fetchUsers, 300), [previousQuery]);
+  const debouncedFetchUsers = useCallback(
+    debounce((query: string) => fetchUsers(query), 300),
+    [previousQuery]
+  );
 
   useEffect(() => {
     debouncedFetchUsers(query);

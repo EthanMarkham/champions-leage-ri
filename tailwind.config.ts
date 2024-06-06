@@ -8,9 +8,7 @@ const config: Config = {
   ],
   daisyui: {
     themes: [
-      "dark",
-      "light",
-      "cupcake",
+      "nord",
       {
         mytheme: {
           primary: "#0d7377",

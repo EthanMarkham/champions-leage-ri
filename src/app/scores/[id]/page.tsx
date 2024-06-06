@@ -49,55 +49,32 @@ export default async function ScoreCardPage({ params }: { params: Params }) {
   const currencyFormatter = getCurrencyFormatter();
 
   return (
-    <section className="flex flex-col space-y-6 p-6 !pt-10 w-full max-w-[1000px] mx-auto">
-      <form className="flex gap-4 lg:gap-10 flex-wrap">
-        {scoreSheetGroup.scoreSheets.map((scoreSheet) => (
-          <ScoreCardPlayerBox key={scoreSheet.id} scoreSheet={scoreSheet} />
-        ))}
+    <section className="flex flex-col space-y-6 p-2 md:p-4 lg:p-6 w-full max-w-[1000px] mx-auto">
+      <div className="flex flex-wrap gap-2 justify-between items-center">
+        {amountDue > 0 && (
+          <div className="stat text-xs w-fit h-fit">
+            <div className="stat-desc">Amount Due</div>
+            <div className="stat-value">{currencyFormatter.format(amountDue)}</div>
+          </div>
+        )}
 
-        <div className="flex gap-8 justify-around md:justify-end grow">
-          {amountDue > 0 && (
-            <div className="indicator -translate-y-4">
-              <div className="stat text-xs w-fit h-fit">
-                <span className="indicator-item indicator-bottom indicator-center">
-                  <button className="btn btn-success btn-xs p-1 h-fit">Add Funds</button>
-                </span>
-                <div className="stat-desc">Amount Due</div>
-                <div className="stat-value">{currencyFormatter.format(amountDue)}</div>
-              </div>
-            </div>
-          )}
-
-          {!scoreSheetGroup.submitted && (
-            <div className="flex justify-around items-center">
-              <button className="btn btn-secondary">
-                Submit<span className="hidden lg:inline">&nbsp;Round</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </form>
-
-      <div className="divider"></div>
-
-      <div className="base-300">
-        <div className="text-xl font-medium my-2">Scores</div>
-        <ScoreTable holes={holes} scoreSheetGroup={scoreSheetGroup} totalScore={getTotalPar(holes)} />
+        {!scoreSheetGroup.submitted && (
+          <div className="flex gap-2">
+            {amountDue > 0 && <button className="btn btn-success">Add Funds</button>}
+            <button className="btn btn-secondary">Submit Round</button>
+          </div>
+        )}
       </div>
 
-      <div className="divider"></div>
-
-      <div className="base-300">
-        <div className="text-xl font-medium my-2">Spread It</div>
+      <form className="flex flex-row flex-wrap justify-center lg:justify-start gap-8">
         {scoreSheetGroup.scoreSheets.map((scoreSheet) => (
-          <div key={scoreSheet.id}>
-            <span className="label p-0">{scoreSheet.playerName}</span>
-            <ScoreSpread
-              key={scoreSheet.id + "_spread"}
-              scores={scoreSheet.scores.map(({ score }, i) => score - holes[i].par)}
-            />
-          </div>
+          <ScoreCardPlayerBox key={scoreSheet.id} scoreSheet={scoreSheet} holes={holes} submitted={false} />
         ))}
+      </form>
+
+      <div className="base-300 p-4 rounded-lg">
+        <div className="text-xl font-medium my-2">Scores</div>
+        <ScoreTable holes={holes} scoreSheetGroup={scoreSheetGroup} totalScore={getTotalPar(holes)} />
       </div>
 
       <UserScoreCardManagement />

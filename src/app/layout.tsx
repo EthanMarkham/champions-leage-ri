@@ -68,7 +68,7 @@ export default function RootLayout({
             "w-full h-full min-h-screen max-h-screen overflow-auto",
             "[&>div]:p-2 [&>div]:lg:p-4 [&>*]:grow"
           )}
-          data-theme="dark"
+          data-theme="nord"
         >
           <Suspense fallback={<SpinnerPage />}>{children}</Suspense>
         </main>
