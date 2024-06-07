@@ -1,38 +1,40 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
+import Input from "@/components/ui/Input";
 
-interface AddPlayerSectionProps {}
+interface AddPlayerSectionProps {
+  errors: { name?: string; email?: string };
+}
 
-const AddPlayerSection: React.FC<AddPlayerSectionProps> = ({}) => {
+const AddPlayerSection: React.FC<AddPlayerSectionProps> = ({ errors }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
 
   return (
     <>
       <h3 className="font-bold text-lg">Add New Player!</h3>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Player Name</label>
-        <input
+      <div className="flex flex-col gap-4 p-2">
+        <Input
           type="text"
-          className={`input input-bordered w-full mt-1 ${errors.name ? "border-red-500" : ""}`}
-          placeholder="Player Name"
+          label="Name:"
+          placeholder="First Last"
+          name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          error={errors.name}
+          container="w-full"
         />
-        {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Player Email</label>
-        <input
+        <Input
           type="email"
-          className={`input input-bordered w-full mt-1 ${errors.email ? "border-red-500" : ""}`}
-          placeholder="Player Email"
+          label="Email:"
+          placeholder="Optional@example.com"
+          name="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          error={errors.email}
+          container="w-full"
         />
-        {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
       </div>
     </>
   );

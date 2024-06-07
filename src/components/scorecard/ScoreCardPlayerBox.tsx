@@ -1,8 +1,8 @@
 "use client";
 
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { PlusIcon, MinusIcon } from "@heroicons/react/24/solid";
 import { getTotalStrokes } from "@/lib/scorecard";
-import { MouseEventHandler, createRef } from "react";
+import React, { MouseEventHandler, createRef } from "react";
 import { getTotalPar } from "@/lib/holes";
 import { twMerge } from "tailwind-merge";
 import ScoreSpread from "./ScoreSpread";
@@ -16,14 +16,45 @@ interface ScoreSheet {
 interface ScoreCardPlayerBoxProps {
   scoreSheet: ScoreSheet;
   holes: { par: number }[];
+  onConfirm: (dataId: number) => void;
+  onRemove: () => void;
   submitted: boolean;
 }
 
-const ScoreCardPlayerBox: React.FC<ScoreCardPlayerBoxProps> = ({ scoreSheet, holes, submitted }) => {
+const ScoreCardPlayerBox: React.FC<ScoreCardPlayerBoxProps> = ({
+  scoreSheet,
+  holes,
+  onConfirm,
+  onRemove,
+  submitted,
+}) => {
   const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
-    (document.getElementById("userScoreCardManagementModal") as any)?.showModal();
-    document.getElementById(`scoreAdd_${scoreSheet.playerName}`)?.setAttribute("value", "butts");
+
+    if (submitted) return onRemove();
+
+    const dialog = document.getElementById("userScoreCardManagementModal") as HTMLDialogElement;
+    if (dialog) {
+      dialog.showModal();
+      dialog.addEventListener(
+        "confirmAction",
+        function (event: any) {
+          onConfirm(event.detail.dataId);
+          dialog.close();
+        },
+        { once: true }
+      );
+      dialog.addEventListener(
+        "close",
+        function () {
+          const inputs = dialog.querySelectorAll("input");
+          inputs.forEach((input) => {
+            input.value = "";
+          });
+        },
+        { once: true }
+      );
+    }
   };
 
   const totalPar = getTotalPar(holes);
@@ -40,15 +71,24 @@ const ScoreCardPlayerBox: React.FC<ScoreCardPlayerBoxProps> = ({ scoreSheet, hol
       <input id={`scoreAdd_${scoreSheet.playerName}`} ref={ref} type="hidden" />
       <span className="indicator-item indicator-top indicator-end translate-x-[1px] translate-y-[-30px]">
         <button
-          className="btn btn-secondary btn-sm rounded-full"
+          className={twMerge("btn btn-sm rounded-full", submitted ? "btn-error" : "btn-secondary")}
           data-player={scoreSheet.playerName}
           onClick={handleClick}
         >
-          <PlusIcon className="w-4 h-4 pointer-events-none" />
-          <span className="">Add</span>
+          {!submitted ? (
+            <>
+              <PlusIcon className="w-4 h-4 pointer-events-none" />
+              <span className="">Add</span>
+            </>
+          ) : (
+            <>
+              <MinusIcon className="w-4 h-4 pointer-events-none" />
+              <span className="">Remove</span>
+            </>
+          )}
         </button>
       </span>
-    
+
       <div
         className={twMerge(
           "card flex flex-row gap-4 items-center lg:space-y-0 lg:space-x-6",

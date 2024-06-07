@@ -1,63 +1,18 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
-import { useSpring, animated } from "@react-spring/web";
-import { twMerge } from "tailwind-merge";
-import debounce from "lodash.debounce";
+import React, { useState } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { useSpring } from "@react-spring/web";
+import useUserSearch, { UserSearchRecord } from "@/hooks/useUserSearch";
+import UserDropdown from "@/components/ui/UserDropdown";
 
-interface User {
-  id: number;
-  name: string;
+interface ConfirmPlayerSectionProps {
+  error?: string;
 }
 
-interface ConfirmPlayerSectionProps {}
-
-const ConfirmPlayerSection: React.FC<ConfirmPlayerSectionProps> = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [query, setQuery] = useState("");
-  const [previousQuery, setPreviousQuery] = useState("");
+const ConfirmPlayerSection: React.FC<ConfirmPlayerSectionProps> = ({ error }) => {
+  const { users, query, handleQueryChange, isLoading, inputRef } = useUserSearch();
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const fetchUsers = async (query: string) => {
-    if (query !== previousQuery) {
-      if (query.length >= 1) {
-        setIsLoading(true);
-        const response = await fetch(`/api/users?name=${query}`);
-        const userData = await response.json();
-        setUsers(userData);
-        setPreviousQuery(query);
-        setIsLoading(false);
-
-        const matchedUser = userData.find((u: User) => u.name === query);
-        if (matchedUser && inputRef.current) {
-          inputRef.current.setAttribute("data-id", matchedUser.id.toString());
-        } else if (inputRef.current) {
-          inputRef.current.removeAttribute("data-id");
-        }
-        if (!matchedUser) {
-          setIsOpen(true);
-        }
-      } else {
-        setIsOpen(false);
-        setUsers([]);
-      }
-    }
-  };
-
-  const debouncedFetchUsers = useCallback(
-    debounce((query: string) => fetchUsers(query), 300),
-    [previousQuery]
-  );
-
-  useEffect(() => {
-    debouncedFetchUsers(query);
-    return () => {
-      debouncedFetchUsers.cancel();
-    };
-  }, [query, debouncedFetchUsers]);
 
   const animationProps = useSpring({
     opacity: isOpen ? 1 : 0,
@@ -68,12 +23,11 @@ const ConfirmPlayerSection: React.FC<ConfirmPlayerSectionProps> = () => {
     config: { tension: 250, friction: 20 },
   });
 
-  const handleUserClick = (user: User) => {
+  const handleUserClick = (user: UserSearchRecord) => {
+    handleQueryChange({ target: { value: user.name } } as React.ChangeEvent<HTMLInputElement>);
     if (inputRef.current) {
-      inputRef.current.value = user.name;
       inputRef.current.setAttribute("data-id", user.id.toString());
     }
-    setQuery(user.name);
     setIsOpen(false);
   };
 
@@ -85,56 +39,48 @@ const ConfirmPlayerSection: React.FC<ConfirmPlayerSectionProps> = () => {
     }, 0);
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleQueryChange(event);
+    const newValue = event.target.value;
+
+    if (inputRef.current) {
+      const matchedUser = users.find((u) => u.name.toLowerCase() === newValue.toLowerCase());
+      if (matchedUser) {
+        inputRef.current.setAttribute("data-id", matchedUser.id.toString());
+        handleQueryChange({ target: { value: matchedUser.name } } as React.ChangeEvent<HTMLInputElement>); // Correct the capitalization
+      } else {
+        inputRef.current.removeAttribute("data-id");
+      }
+    }
+
+    setIsOpen(newValue.length > 0 && !isLoading);
+  };
+
   return (
     <>
-      <h3 className="font-bold text-lg">Confirm the Player!</h3>
-      <form id="addPlayerForm" className="w-full mt-1">
+      <h3 className="font-bold text-lg">Confirm the Player</h3>
+      <form id="addPlayerForm" className="w-full mt-4">
         <div className="w-full text-left rounded-lg shadow-md cursor-default sm:text-sm relative" onBlur={handleBlur}>
           <input
+            name="confirmPlayer"
             ref={inputRef}
-            className="w-full input input-bordered focus:outline-none py-2 pl-3 pr-10 text-lg leading-5"
+            className={`w-full input input-bordered ${
+              error ? "input-error" : ""
+            } focus:outline-none py-2 pl-3 pr-10 text-lg leading-5`}
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onFocus={() => setIsOpen(true)}
+            onChange={handleInputChange}
+            onFocus={() => !isLoading && setIsOpen(true)}
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
             <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
           </div>
-          {isOpen && (
-            <animated.div
-              style={animationProps}
-              className={twMerge(
-                "absolute left-0 right-0 rounded-md shadow-lg ring-1 overflow-y-auto z-10",
-                "ring-black ring-opacity-5 focus:outline-none",
-                "text-base sm:text-sm bg-white/70 backdrop-blur"
-              )}
-              onMouseDown={(e) => e.preventDefault()}
-            >
-              {isLoading ? (
-                <div className="cursor-default select-none relative py-2 px-4">Loading...</div>
-              ) : users.length === 0 && query.length > 1 ? (
-                <div className="cursor-default select-none relative py-2 px-4">No results found.</div>
-              ) : (
-                users.map((user) => (
-                  <div
-                    key={user.id}
-                    className={`cursor-default select-none relative py-2 px-4 ${
-                      inputRef.current?.value === user.name ? "text-base-300 bg-primary" : "text-neutral"
-                    }`}
-                    onClick={() => handleUserClick(user)}
-                  >
-                    <span
-                      className={`${
-                        inputRef.current?.value === user.name ? "font-medium" : "font-normal"
-                      } block truncate`}
-                    >
-                      {user.name}
-                    </span>
-                  </div>
-                ))
-              )}
-            </animated.div>
-          )}
+          <UserDropdown
+            users={users}
+            query={query}
+            isOpen={isOpen}
+            animationProps={animationProps}
+            onUserClick={handleUserClick}
+          />
         </div>
       </form>
     </>

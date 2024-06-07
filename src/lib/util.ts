@@ -8,3 +8,18 @@ export const getCurrencyFormatter = () => {
   });
   return formatter;
 };
+
+export const parseAndValidateId = (id: string | string[] | undefined): number | null => {
+  if (!id || Array.isArray(id)) {
+    console.error("ID should be a single string, received:", id);
+    return null;
+  }
+
+  const numericId = parseInt(id, 10);
+  if (isNaN(numericId)) {
+    console.error("ID is not a valid number:", id);
+    return null;
+  }
+
+  return numericId;
+};

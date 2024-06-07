@@ -14,7 +14,7 @@ interface ScoreTableProps {
 const ScoreTable: React.FC<ScoreTableProps> = ({ holes, scoreSheetGroup, totalScore }) => {
   return (
     <div className="overflow-x-auto border shadow border-base-300 rounded-lg">
-      <table className="table table-xs lg:table-sm table-pin-rows table-pin-cols bg-base-300 border-base-100 shadow-lg">
+      <table className="table table-xs lg:table-md table-pin-rows table-pin-cols bg-base-300 border-base-100 shadow-lg">
         <thead>
           <tr>
             <th>Hole</th>
