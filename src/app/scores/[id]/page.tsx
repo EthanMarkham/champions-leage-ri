@@ -1,6 +1,7 @@
-import { getScoreSheetDetails } from "@/lib/scorecard";
+import { getScoreSheetDetails } from "@/lib";
 import ScoreCardPage from "@/components/features/ScoreCardPage";
-import { parseAndValidateId } from "@/lib/util";
+import { parseAndValidateId } from "@/utils/util";
+import ScoreCardContextWrapper from "@/contexts/ScoreCardContextWrapper";
 
 async function fetchScoreSheetGroup(id: string) {
   const numericId = parseAndValidateId(id);
@@ -24,5 +25,9 @@ export default async function ScoreCardPageServer({ params }: ServerProps) {
     return <div className="alert alert-error">Oops! Score sheet not found...</div>;
   }
 
-  return <ScoreCardPage scoreSheetGroup={scoreSheetGroup} />;
+  return (
+    <ScoreCardContextWrapper>
+      <ScoreCardPage scoreSheetGroup={scoreSheetGroup} />
+    </ScoreCardContextWrapper>
+  );
 }

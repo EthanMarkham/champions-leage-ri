@@ -1,6 +1,6 @@
 import Card from "@/components/ui/Card";
-import { dateStarted, dateToMonthYearDisplay } from "@/lib/date";
-import { getAllEvents } from "@/lib/event";
+import { getAllEvents } from "@/lib";
+import { dateStarted, dateToMonthYearDisplay } from "@/utils";
 import { CheckCircleIcon, ArrowRightIcon, CreditCardIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import { twMerge } from "tailwind-merge";
@@ -11,23 +11,16 @@ const Rules = async () => {
   return (
     <div
       className={twMerge(
-        "flex flex-row flex-wrap max-w-5xl mx-auto",
-        "[&>div]:flex [&>div]:flex-col [&>div]:flex-1",
-        "[&>div>div]:rounded-none [&>div>div]:w-full [&>div>div]:bg-transparent",
-        "[&>div>div>div>.card-title]:mt-0 [&>div>div>div>.card-title]:mb-1"
+        "flex flex-row flex-wrap max-w-5xl mx-auto gap-6",
+        "[&>div]:flex [&>div]:flex-col [&>div]:flex-1"
       )}
     >
-      <div>
-        <Card
-          className={twMerge(
-            "[&>.card-body]:w-fit [&>.card-body]:mx-auto [&>.card-body]:items-center",
-            "[&>div>.card-title]:w-full"
-          )}
-        >
-          <div className="stat w-fit">
+      <div className="w-full md:w-1/2">
+        <Card className="shadow-lg p-6 bg-base-100">
+          <div className="stat">
             <div className="stat-figure text-primary">
-              <button className="btn h-fit">
-                <CreditCardIcon className="block w-12 h-12 stroke-current" />
+              <button className="btn btn-primary btn-circle">
+                <CreditCardIcon className="block w-8 h-8" />
                 <span className="sr-only">Pay Now</span>
               </button>
             </div>
@@ -35,56 +28,38 @@ const Rules = async () => {
             <div className="stat-value text-primary">$5.00</div>
             <div className="stat-desc">PayPal to @ChampionsLeagueRI</div>
           </div>
-          <ul
-            className={twMerge(
-              "[&>li]:flex [&>li]:items-center [&>li]:gap-1",
-              "[&>li>svg]:w-4 [&>li>svg]:h-4",
-              "[&>li>*]:inline-block",
-              "[&>li>span:first-child]:font-bold"
-            )}
-          >
-            <li>
-              <span>$2.00</span>
-              <ArrowRightIcon />
+          <ul className="list-none mt-4 space-y-2">
+            <li className="flex items-center gap-2">
+              <span className="font-bold">$2.00</span>
+              <ArrowRightIcon className="w-4 h-4" />
               <span>Local course improvements</span>
             </li>
-            <li>
-              <span>$1.00</span>
-              <ArrowRightIcon />
+            <li className="flex items-center gap-2">
+              <span className="font-bold">$1.00</span>
+              <ArrowRightIcon className="w-4 h-4" />
               <span>Party Fund and End-of-year Banquet</span>
             </li>
-            <li>
-              <span>$2.00</span>
-              <ArrowRightIcon />
+            <li className="flex items-center gap-2">
+              <span className="font-bold">$2.00</span>
+              <ArrowRightIcon className="w-4 h-4" />
               <span>Year-End prize fund</span>
             </li>
           </ul>
         </Card>
 
-        <Card title="Divisions" className="relative">
+        <Card title="Divisions" className="shadow-lg p-6 bg-base-100 mt-6">
           <h3 className="text-md mb-2">
             As this is a new initiative, we will continuously evaluate and adjust the divisions as needed. Competitors
             will be categorized into three divisions.
           </h3>
-          <ul
-            className={twMerge(
-              "flex flex-wrap justify-start gap-4 mb-4",
-              "[&>li>span]:badge [&>li>span]:badge-primary [&>li>span]:text-base [&>li>span]:p-4 [&>li>span]:rounded-2xl"
-            )}
-          >
-            <li>
-              <span>Division 1</span>
-            </li>
-            <li>
-              <span>Division 2</span>
-            </li>
-            <li>
-              <span>Division 3</span>
-            </li>
+          <ul className="flex flex-wrap justify-start gap-4 mb-4">
+            <li><span className="badge badge-primary text-base p-4 rounded-2xl">Division 1</span></li>
+            <li><span className="badge badge-primary text-base p-4 rounded-2xl">Division 2</span></li>
+            <li><span className="badge badge-primary text-base p-4 rounded-2xl">Division 3</span></li>
           </ul>
         </Card>
 
-        <Card title="Rules" className={twMerge("prose h-fit")}>
+        <Card title="Rules" className="shadow-lg p-6 bg-base-100 mt-6 prose">
           <ul className="list-disc">
             <li>Must play 9/12 months to be eligible</li>
             <li>Anyone who completes 9/12 months wins money</li>
@@ -98,24 +73,22 @@ const Rules = async () => {
         </Card>
       </div>
 
-      <div>
-        <Card title="Course Schedule">
-          <ul className="[&>li]:my-6">
+      <div className="w-full md:w-1/2">
+        <Card title="Course Schedule" className="shadow-lg p-6 bg-base-100">
+          <ul className="space-y-4">
             {events
               .sort((a, b) => (a.time > b.time ? 1 : -1))
               .map((event, i) => (
-                <li key={i} className="flex items-center gap-1">
-                  {dateStarted(event.time) ? <CheckCircleIcon className="w-6 h-6" /> : <span className="w-6 h-6" />}
-                  <time>{dateToMonthYearDisplay(event.time)}</time>
-                  <span>
-                    {event.layout.course.name} - {event.layout.name}
-                  </span>
+                <li key={i} className="flex items-center gap-2">
+                  {dateStarted(event.time) ? <CheckCircleIcon className="w-6 h-6 text-success" /> : <span className="w-6 h-6" />}
+                  <time className="text-base font-medium">{dateToMonthYearDisplay(event.time)}</time>
+                  <span className="text-base">{event.layout.course.name} - {event.layout.name}</span>
                 </li>
               ))}
           </ul>
         </Card>
 
-        <Card title="Background & Motivation" className={twMerge("prose", "[&>div>.card-title]:mt-0 [&>div>p]:mt-0")}>
+        <Card title="Background & Motivation" className="shadow-lg p-6 bg-base-100 mt-6 prose">
           <p>
             This was set up to allow a group of friends to generate some friendly disc golf competition in southern RI
             and throw a party the following year.

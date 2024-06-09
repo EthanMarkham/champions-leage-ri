@@ -1,18 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { useSpring } from "@react-spring/web";
-import useUserSearch, { UserSearchRecord } from "@/hooks/useUserSearch";
+
+import { useError, useUserSearch, UserSearchRecord } from "@/hooks";
+
 import UserDropdown from "@/components/ui/UserDropdown";
 
 interface ConfirmPlayerSectionProps {
-  error?: string;
+  playerList: Map<number, any>;
+  setPlayerList: React.Dispatch<React.SetStateAction<Map<number, any>>>;
+  selectedScoreSheet: number;
+  setSelectedScoreSheet: React.Dispatch<React.SetStateAction<number | null>>;
+  toggleSection: () => void;
 }
 
-const ConfirmPlayerSection: React.FC<ConfirmPlayerSectionProps> = ({ error }) => {
+const ConfirmPlayerSection: React.FC<ConfirmPlayerSectionProps> = ({
+  playerList,
+  setPlayerList,
+  selectedScoreSheet,
+  setSelectedScoreSheet,
+  toggleSection,
+}) => {
   const { users, query, handleQueryChange, isLoading, inputRef } = useUserSearch();
   const [isOpen, setIsOpen] = useState(false);
+  const [confirmError, setConfirmError] = useError();
+
+  const filteredUsers = useMemo(
+    () => users.filter((u) => !Array.from(playerList.values()).includes(u.id)),
+    [users, playerList]
+  );
 
   const animationProps = useSpring({
     opacity: isOpen ? 1 : 0,
@@ -53,36 +72,64 @@ const ConfirmPlayerSection: React.FC<ConfirmPlayerSectionProps> = ({ error }) =>
       }
     }
 
-    setIsOpen(newValue.length > 0 && !isLoading);
+    setIsOpen(newValue.length > 0);
   };
+
+  const handleConfirmAction = useCallback(() => {
+    const input = inputRef.current;
+
+    if (!input || !selectedScoreSheet) {
+      return;
+    }
+
+    const dataId = input.getAttribute("data-id");
+
+    if (!dataId) {
+      setConfirmError("Please select a player");
+      return;
+    } else {
+      setPlayerList((cur) => {
+        const newPlayerList = new Map(cur);
+        newPlayerList.set(selectedScoreSheet, parseInt(dataId));
+        return newPlayerList;
+      });
+      setSelectedScoreSheet(null);
+    }
+  }, [selectedScoreSheet, setPlayerList, setSelectedScoreSheet, setConfirmError]);
 
   return (
     <>
       <h3 className="font-bold text-lg">Confirm the Player</h3>
-      <form id="addPlayerForm" className="w-full mt-4">
-        <div className="w-full text-left rounded-lg shadow-md cursor-default sm:text-sm relative" onBlur={handleBlur}>
-          <input
-            name="confirmPlayer"
-            ref={inputRef}
-            className={`w-full input input-bordered ${
-              error ? "input-error" : ""
-            } focus:outline-none py-2 pl-3 pr-10 text-lg leading-5`}
-            value={query}
-            onChange={handleInputChange}
-            onFocus={() => !isLoading && setIsOpen(true)}
-          />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-            <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
-          </div>
-          <UserDropdown
-            users={users}
-            query={query}
-            isOpen={isOpen}
-            animationProps={animationProps}
-            onUserClick={handleUserClick}
-          />
+      <div className="w-full text-left rounded-lg shadow-md cursor-default sm:text-sm relative" onBlur={handleBlur}>
+        <input
+          name="confirmPlayer"
+          ref={inputRef}
+          className={`w-full input input-bordered ${
+            confirmError ? "input-error" : ""
+          } focus:outline-none py-2 pl-3 pr-10 text-lg leading-5`}
+          value={query}
+          onChange={handleInputChange}
+          onFocus={() => !isLoading && setIsOpen(true)}
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+          <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
         </div>
-      </form>
+        <UserDropdown
+          users={filteredUsers}
+          query={query}
+          isOpen={isOpen}
+          animationProps={animationProps}
+          onUserClick={handleUserClick}
+        />
+      </div>
+      <div className="action-row">
+        <button type="button" className="btn btn-outline grow" onClick={toggleSection}>
+          Add New
+        </button>
+        <button type="button" className="btn btn-primary grow" onClick={handleConfirmAction}>
+          Confirm
+        </button>
+      </div>
     </>
   );
 };

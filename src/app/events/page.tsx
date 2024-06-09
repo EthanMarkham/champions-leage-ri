@@ -1,5 +1,5 @@
-import { dateStarted, dateToMonthYearDisplay, isCurrentMonthYear } from "@/lib/date";
-import { getDetailedEventList } from "@/lib/event";
+import { getDetailedEventList } from "@/lib";
+import { dateStarted, dateToMonthYearDisplay, isCurrentMonthYear } from "@/utils";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/16/solid";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -18,8 +18,8 @@ export default async function Events() {
     }));
 
   return (
-    <section className="flex w-full justify-center items-center h-full overflow-auto relative">
-      <input className="input absolute top-0 right-0" type="date" />
+    <section className=" overflow-y-auto relative py-8">
+      {/*<input className="input absolute top-0 right-0" type="date" />*/}
       <ul className="timeline timeline-snap-icon timeline-vertical translate-x-[-40%] md:translate-x-0">
         {events.map((event, i) => (
           <li key={event.id}>

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { getDateFromUdiscTime } from "@/lib/date";
-import { parseCSV } from "@/lib/csv";
+import { parseCSV } from "@/utils/csv";
 import prisma from "@/lib/prisma";
 import { findEvent } from "@/lib/event";
+import { getDateFromUdiscTime } from "@/utils/dateUtils";
+import { equal } from "assert";
 
 interface ScoreResult {
   PlayerName: string;
@@ -40,7 +41,7 @@ async function buildRoundData(file: Blob): Promise<{ scoreData?: ScoreData; erro
       if (!firstRow.hasOwnProperty(key)) return { error: "Unable to parse CSV" };
     }
 
-    const dataString = results.map(row => JSON.stringify(row)).join("|");
+    const dataString = results.map((row) => JSON.stringify(row)).join("|");
     const hash = crypto.createHash("sha256").update(dataString).digest("hex");
     const scoreData: ScoreData = {
       hash,
@@ -134,12 +135,50 @@ export async function POST(req: NextRequest) {
       return NextResponse.redirect(newUrl.toString(), 303); // Use 303 See Other for redirection with GET
     }
 
-    return NextResponse.json({
-      message: "Got it!",
-      ...processedOutput,
-      redirectUrl: new URL(processedOutput.scoreSheetLink, new URL(req.url).origin).toString(),
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        message: "Got it!",
+        ...processedOutput,
+        redirectUrl: new URL(processedOutput.scoreSheetLink, new URL(req.url).origin).toString(),
+      },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json({ message: (error as Error).message }, { status: 500 });
   }
+}
+
+export async function PUT(req: NextRequest) {
+  const formData = await req.json();
+  //const players = formData.get("players");
+  console.log(formData);
+
+  const playerMap = formData["playerMap"];
+  const scoreSheetGroupId = formData["scoreSheetGroupId"];
+
+  if (!scoreSheetGroupId || !playerMap || Object.keys(playerMap).length < 2) {
+    return NextResponse.json({ error: "Oops!  Somthing went wrong!!!" }, { status: 400 });
+  }
+
+  for (const scoreSheetId of Object.keys(playerMap)) {
+    await prisma.scoreSheet.update({
+      where: {
+        id: parseInt(scoreSheetId),
+      },
+      data: {
+        userId: playerMap[scoreSheetId],
+      },
+    });
+  }
+
+  const scoreSheetGroup = await prisma.scoreSheetGroup.update({
+    where: {
+      id: parseInt(scoreSheetGroupId),
+    },
+    data: {
+      submitted: true,
+    },
+  });
+
+  return NextResponse.json({ redirect: `/events/${scoreSheetGroup.eventId}` }, { status: 200 });
 }

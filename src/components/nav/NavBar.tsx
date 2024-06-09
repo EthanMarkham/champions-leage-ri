@@ -1,5 +1,4 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import LogoAlt from "@/components/svg/Logo";
 import Link from "next/link";
 export interface NavigationItem {
   name: string;

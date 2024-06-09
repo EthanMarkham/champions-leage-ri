@@ -5,7 +5,7 @@ import { twJoin, twMerge } from "tailwind-merge";
 
 interface InputProps extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   label?: string;
-  error?: string;
+  error?: string | null;
   container?: string;
 }
 

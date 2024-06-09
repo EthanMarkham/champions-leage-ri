@@ -1,10 +1,8 @@
-import { getCourses } from "@/lib/courses";
-import { getTotalDistance, getTotalPar } from "@/lib/holes";
-
-type LayoutProps = Awaited<ReturnType<typeof getCourses>>[number]["layouts"];
+import { getTotalDistance, getTotalPar } from "@/utils";
+import type { LayoutDetails } from "@/types";
 
 interface LayoutTableProps {
-  layouts: LayoutProps;
+  layouts: LayoutDetails;
 }
 
 const LayoutTable = (props: LayoutTableProps) => {

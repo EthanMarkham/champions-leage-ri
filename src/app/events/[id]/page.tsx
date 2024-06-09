@@ -1,8 +1,8 @@
 import ScoreExpander from "@/components/scorecard/ScoreExpander";
 
-import { dateToMonthYearDisplay } from "@/lib/date";
-import { getEventById } from "@/lib/event";
-import { getUserScoresByEventId } from "@/lib/scorecard";
+import { getEventById, getUserScoresByEventId } from "@/lib";
+import { dateToMonthYearDisplay } from "@/utils";
+
 import Link from "next/link";
 
 export const revalidate = 3600; // Revalidate the data at most every hour
@@ -18,7 +18,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      <div className="text-sm breadcrumbs w-full">
+      <div className="text-xs lg:text-sm breadcrumbs w-full overflow-hidden">
         <ul>
           <li>
             <Link href={"/events"}>Events</Link>

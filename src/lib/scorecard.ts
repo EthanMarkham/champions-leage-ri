@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Score, ScoreSheet, User } from "@prisma/client";
 import { cache } from "react";
-import { add, multiply, subtract } from "mathjs";
+import { getTotalStrokes } from "@/utils/scoreUtils";
 
 interface UserScores {
   user: User;
@@ -44,10 +44,6 @@ export const getScoreSheetDetails = cache(async (id: number) => {
 
   return scoreSheetGroup;
 });
-
-export function getTotalStrokes(scrores: { score: number }[]) {
-  return scrores.reduce((prev, cur) => prev + cur.score, 0);
-}
 
 export const getScoresByEventId = cache(async (id: number) => {
   const scoreGroups = await prisma.scoreSheetGroup.findMany({
@@ -115,16 +111,3 @@ export const getUserScoresByEventId = cache(async (id: number) => {
 
   return usersScores;
 });
-
-export const getScoreSheetAmountOwed = (scoreSheet: Awaited<ReturnType<typeof getScoreSheetDetails>>) => {
-  return subtract(getTotalCost(scoreSheet), getTotalPayments(scoreSheet));
-};
-
-export const getTotalPayments = (scoreSheet: Awaited<ReturnType<typeof getScoreSheetDetails>>) => {
-  return scoreSheet?.payments.reduce((acc, cur) => add(acc, cur.amount), 0) || 0;
-};
-
-export const getTotalCost = (scoreSheet: Awaited<ReturnType<typeof getScoreSheetDetails>>) => {
-  const numberOfRounds = scoreSheet?.scoreSheets.length || 0;
-  return multiply(numberOfRounds, 5);
-};

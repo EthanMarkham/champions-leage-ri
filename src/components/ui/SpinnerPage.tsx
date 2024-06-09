@@ -10,9 +10,8 @@ const SpinnerPage = forwardRef<HTMLDivElement, SpinnerPageProps>(({ spinnerProps
     <div {...props} className={twMerge("flex items-center justify-center", props.className)} ref={ref}>
       <div className="absolute right-1/2 bottom-1/2 transform translate-x-1/2 translate-y-1/2">
         <span className="loading loading-ball loading-xs"></span>
-        <span className="loading loading-ball loading-sm"></span>
         <span className="loading loading-ball loading-md"></span>
-        <span className="loading loading-ball loading-lg"></span>
+        <span className="loading loading-ball loading-xs"></span>
       </div>
     </div>
   );

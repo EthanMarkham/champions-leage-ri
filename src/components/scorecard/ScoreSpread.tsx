@@ -1,4 +1,4 @@
-import { getRelativeScoreColor } from "@/lib/score";
+import { getRelativeScoreColor } from "@/utils/scoreUtils";
 import React from "react";
 
 interface ScoreSpreadProps {

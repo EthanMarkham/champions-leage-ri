@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { roundTo } from "./math";
+import { roundTo } from "@/utils/util";
 
 export async function findEvent(date: Date, courseName: string, layoutName: string) {
   const course = await prisma.course.findUnique({
@@ -150,7 +150,7 @@ export async function getDetailedEventList() {
         },
         where: {
           submitted: true,
-        }
+        },
       },
       layout: {
         include: {

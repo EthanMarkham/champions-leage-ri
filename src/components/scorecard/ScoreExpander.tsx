@@ -1,12 +1,15 @@
-import { getScoreColor } from "@/lib/score";
-import { getUserScoresByEventId } from "@/lib/scorecard";
-import { Hole } from "@prisma/client";
 import { DetailedHTMLProps, HTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
-import Card from "../ui/Card";
+
+import { getScoreColor } from "@/utils";
+import { Hole } from "@prisma/client";
+
+import Card from "@/components/ui/Card";
+
+import type { ScoreSheetDetails } from "@/types";
 
 interface ScoreExpanderProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-  scoreSheet: Awaited<ReturnType<typeof getUserScoresByEventId>>[number]["scoreSheets"][number];
+  scoreSheet: ScoreSheetDetails;
   holes: Hole[];
 }
 

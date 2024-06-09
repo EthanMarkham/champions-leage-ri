@@ -1,9 +1,9 @@
-import { getScoreColor } from "@/lib/score";
-import { getScoreSheetDetails } from "@/lib/scorecard";
-import { Hole, Score, ScoreSheet, ScoreSheetGroup } from "@prisma/client";
+import type { ScoreSheetGroupDetails } from "@/types";
+import { getScoreColor } from "@/utils/scoreUtils";
+import { Hole } from "@prisma/client";
 import React from "react";
 
-type GroupDetails = Exclude<Awaited<ReturnType<typeof getScoreSheetDetails>>, null>;
+type GroupDetails = Exclude<ScoreSheetGroupDetails, null>;
 
 interface ScoreTableProps {
   holes: Hole[];
