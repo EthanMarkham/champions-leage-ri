@@ -37,7 +37,7 @@ export default function ScoreExpander({ scoreSheet, holes, className, children, 
       <Card
         tabIndex={0}
         className={twMerge(
-          "z-20 dropdown-content backdrop-blur-sm shadow-lg rounded-lg",
+          "z-20 dropdown-content backdrop-blur-sm shadow-lg rounded-lg w-[80vw]",
           "bg-primary/80 card-bordered border-primary",
           "[&>.card-body]:p-2"
         )}
