@@ -150,14 +150,11 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const formData = await req.json();
-  //const players = formData.get("players");
-  console.log(formData);
-
   const playerMap = formData["playerMap"];
   const scoreSheetGroupId = formData["scoreSheetGroupId"];
 
   if (!scoreSheetGroupId || !playerMap || Object.keys(playerMap).length < 2) {
-    return NextResponse.json({ error: "Oops!  Somthing went wrong!!!" }, { status: 400 });
+    return NextResponse.json({ error: "Oops! Something went wrong!!!" }, { status: 400 });
   }
 
   for (const scoreSheetId of Object.keys(playerMap)) {
@@ -180,5 +177,10 @@ export async function PUT(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ redirect: `/events/${scoreSheetGroup.eventId}` }, { status: 200 });
+  // Get the current URL from the request object
+  const currentUrl = req.nextUrl.clone();
+  currentUrl.pathname = `/events/${scoreSheetGroup.eventId}`;
+
+  // Use the current URL in the redirect
+  return NextResponse.json({ redirect: currentUrl.toString() }, { status: 200 });
 }
